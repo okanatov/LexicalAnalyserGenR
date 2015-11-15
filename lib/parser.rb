@@ -17,6 +17,7 @@ class Parser
         return 10 * tens + ones
     end
 
+    private
     def step(number)
         result = 0
         char = @string_io.getc
