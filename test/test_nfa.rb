@@ -7,6 +7,7 @@ class SimpleNFA < MiniTest::Test
     end
 
     def test_simpleGet
+        skip
         assert_equal('a', @nfa.get)
         assert_equal('b', @nfa.get)
         assert_equal('a', @nfa.get)
@@ -15,6 +16,6 @@ class SimpleNFA < MiniTest::Test
     end
 
     def test_simpleCreateNFA
-        @nfa.createFullNFA
+        @nfa.createNFA
     end
 end

@@ -1,58 +1,62 @@
 class NFA
     def initialize(string)
         @string = string
-        @index = 0
-        @diagrams = Array.new
+        @nfa = Array.new
     end
 
-    def get
-        result = @string[@index]
-        @index += 1
-        result
-    end
-
-    def createFullNFA
-        (0..@string.length - 1).each do
-            createSimple
+    def createNFA
+        @string.each_char do |c|
+            @nfa << createSimpleExpression(c)
         end
 
-        p @diagrams
+        joinSimpleExpressions
+        
+        # puts @nfa[0] # to leave only 1 element
+
+        state = @nfa[0]
+        while (state.neigbours.length != 0)
+            puts state.label
+
+            transition = state.neigbours.keys.first
+            state = state.neigbours[transition]
+        end
+        puts state.label
     end
 
     private
-    def createSimple
-        char = get
+    def createSimpleExpression(char)
+        start = State.new
+        finish = State.new
 
-        startState = State.new
-        startState.label = "i#{char}"
+        start.label = "i#{char}"
+        finish.label = "f#{char}"
 
-        endState = State.new
-        endState.label = "f#{char}"
+        start.neigbours[char] = finish
 
-        transition = Transition.new(startState, endState, char)
-        @diagrams << transition
+        return start
+    end
+
+    def joinSimpleExpressions
+        @nfa.each_index do |i|
+            next if i == 0
+            prev = @nfa[i - 1]
+            curr = @nfa[i]
+
+            transition = prev.neigbours.keys.first
+
+            prev.neigbours[transition] = curr
+        end
     end
 end
 
 class State
-    attr_accessor :label
+    attr_accessor :label, :neigbours
 
-    def to_s
-        "State: label=#{@label}"
-    end
-end
-
-class Transition
-    attr_reader :startState, :endState
-    attr_reader :label
-
-    def initialize(startState, endState, label)
-        @startState = startState
-        @endState = endState
-        @label = label
+    def initialize
+        @neigbours = Hash.new
     end
 
     def to_s
-        "Transition: startState=#{@startState}, endState=#{@endState}, label=#{@label}"
+        "State: label=#{@label}, neigbours=#{@neigbours}"
     end
 end
