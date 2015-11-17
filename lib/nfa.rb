@@ -1,59 +1,59 @@
 class NFA
     def initialize(string)
         @string = string
-        @nfa = Array.new
+        @nfa = nil
     end
 
-    def createNFA
-        @string.each_char do |c|
-            @nfa << createSimpleExpression(c)
-        end
+    def nfa
+        expressions = Array.new
+        handle_input_string(expressions)
+        create_nfa_from(expressions)
 
-        joinSimpleExpressions
-        
-        # puts @nfa[0] # to leave only 1 element
-
-        state = @nfa[0]
-        while (state.neigbours.length != 0)
-            puts state.label
-
-            transition = state.neigbours.keys.first
-            state = state.neigbours[transition]
-        end
-        puts state.label
+        return @nfa
     end
 
     private
-    def createSimpleExpression(char)
-        start = State.new
-        finish = State.new
+    def handle_input_string(expressions)
+        @string.each_char do |char|
+            expressions << create_single_expression_from(char)
+        end
+    end
 
-        start.label = "i#{char}"
-        finish.label = "f#{char}"
-
-        start.neigbours[char] = finish
+    def create_single_expression_from(char)
+        start = State.new("i#{char}")
+        finish = State.new("f#{char}")
+        start.add_neigbour(char, finish)
 
         return start
     end
 
-    def joinSimpleExpressions
-        @nfa.each_index do |i|
-            next if i == 0
-            prev = @nfa[i - 1]
-            curr = @nfa[i]
+    def create_nfa_from(expressions)
+        @nfa = expressions.shift
 
-            transition = prev.neigbours.keys.first
+        while (!expressions.empty?)
+            state = @nfa
+            while (!state.neigbours.empty?)
+                state = state.neigbours[state.neigbours.keys.first] 
+            end
 
-            prev.neigbours[transition] = curr
+            elem = expressions.shift
+
+            state.neigbours[elem.neigbours.keys.first] =
+                elem.neigbours[elem.neigbours.keys.first]
         end
     end
 end
 
 class State
-    attr_accessor :label, :neigbours
+    attr_reader :label, :neigbours
 
-    def initialize
+    def initialize(label)
+        @label = label
         @neigbours = Hash.new
+    end
+
+    def add_neigbour(move_label, state)
+        @neigbours[move_label] = state
     end
 
     def to_s
