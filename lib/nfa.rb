@@ -7,6 +7,9 @@ class NFA
     def nfa
         expressions = Array.new
         handle_input_string(expressions)
+
+        return nil if expressions.empty?
+
         create_nfa_from(expressions)
 
         return @nfa
@@ -30,12 +33,8 @@ class NFA
     def create_nfa_from(expressions)
         @nfa = expressions.shift
 
-        while (!expressions.empty?)
-            state = @nfa
-            while (!state.neigbours.empty?)
-                state = state.neigbours[state.neigbours.keys.first] 
-            end
-
+        while not expressions.empty?
+            state = @nfa.last
             elem = expressions.shift
 
             state.neigbours[elem.neigbours.keys.first] =
@@ -54,6 +53,31 @@ class State
 
     def add_neigbour(move_label, state)
         @neigbours[move_label] = state
+    end
+
+    def each
+        return self if not block_given?
+
+        state = self
+        loop do
+            yield state
+            state.neigbours.keys.each do |key|
+                state = state.neigbours[key]
+            end
+            break if state.neigbours.empty?
+        end
+        yield state
+    end
+
+    def last
+        state = self
+        loop do
+            state.neigbours.keys.each do |key|
+                state = state.neigbours[key]
+            end
+            break if state.neigbours.empty?
+        end
+        return state
     end
 
     def to_s
