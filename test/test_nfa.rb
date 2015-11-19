@@ -24,4 +24,12 @@ class SimpleNFA < MiniTest::Test
             i += 1
         end
     end
+
+    def test_find_max_path
+        nfa = NFA.new("abab")
+        automata = nfa.nfa
+
+        states = ['ia', 'fa', 'fb', 'fa', 'fb']
+        assert_equal(states, automata.find_max_path)
+    end
 end

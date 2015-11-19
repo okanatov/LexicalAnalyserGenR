@@ -12,6 +12,8 @@ class NFA
 
         create_nfa_from(expressions)
 
+        puts @nfa
+
         return @nfa
     end
 
@@ -32,13 +34,17 @@ class NFA
 
     def create_nfa_from(expressions)
         @nfa = expressions.shift
+        state = @nfa.neigbours[@nfa.neigbours.keys.first]
 
         while not expressions.empty?
-            state = @nfa.last
             elem = expressions.shift
 
-            state.neigbours[elem.neigbours.keys.first] =
-                elem.neigbours[elem.neigbours.keys.first]
+            elem.neigbours.keys.each do |key|
+                state.neigbours[key] =
+                    elem.neigbours[key]
+            end
+
+            state = state.neigbours[state.neigbours.keys.first]
         end
     end
 end
@@ -69,15 +75,20 @@ class State
         yield state
     end
 
-    def last
-        state = self
-        loop do
-            state.neigbours.keys.each do |key|
-                state = state.neigbours[key]
+    def find_max_path
+        num = max = 0
+        path = max_path = Array.new
+
+        self.each { |e|
+            num += 1
+            path << e.label
+            if max < num
+                max = num
+                max_path = path
             end
-            break if state.neigbours.empty?
-        end
-        return state
+        }
+
+        return max_path
     end
 
     def to_s
