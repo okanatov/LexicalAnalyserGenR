@@ -67,6 +67,9 @@ class State
             yield state
             state.neigbours.keys.each do |key|
                 state = state.neigbours[key]
+                state.each do |elem|
+                    elem
+                end
             end
             break if state.neigbours.empty?
         end
