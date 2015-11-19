@@ -12,8 +12,6 @@ class NFA
 
         create_nfa_from(expressions)
 
-        puts @nfa
-
         return @nfa
     end
 
@@ -84,11 +82,36 @@ class State
             path << e.label
             if max < num
                 max = num
-                max_path = path
+                max_path = path.clone
             end
         }
 
         return max_path
+    end
+
+    def find_max
+        num = max = 0
+        path = max_path = Array.new
+        max, max_path = find_max2(num, max, path, max_path)
+        return max, max_path
+    end
+
+    def find_max2(num, max, path, max_path)
+        state = self
+        num += 1
+        path << state.label
+        loop do
+            state.neigbours.keys.each do |key|
+                state = state.neigbours[key]
+                max, max_path = state.find_max2(num, max, path, max_path)
+            end
+            break if state.neigbours.empty?
+        end
+        if max < num
+            max = num
+            max_path = path.clone
+        end
+        return max, max_path
     end
 
     def to_s
