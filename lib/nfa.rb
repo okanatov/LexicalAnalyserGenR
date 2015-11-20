@@ -59,21 +59,21 @@ class State
         @neigbours[move_label] = state
     end
 
-    def each
+    def each(&block)
         return self if not block_given?
+        traversal(self, &block)
+    end
 
-        state = self
-        loop do
-            yield state
-            state.neigbours.keys.each do |key|
-                state = state.neigbours[key]
-                state.each do |elem|
-                    elem
-                end
-            end
-            break if state.neigbours.empty?
+    def traversal(state, &block)
+        if state.neigbours.empty?
+            block.call state
+            return
         end
-        yield state
+
+        state.neigbours.keys.each do |key|
+            block.call state
+            traversal(state.neigbours[key], &block)
+        end
     end
 
     def find_max_path
