@@ -61,63 +61,45 @@ class State
 
     def each(&block)
         return self if not block_given?
-        traversal(self, &block)
-    end
 
-    def traversal(state, &block)
-        if state.neigbours.empty?
-            block.call state
+        if self.neigbours.empty?
+            block.call self
             return
         end
 
-        state.neigbours.keys.each do |key|
-            block.call state
-            traversal(state.neigbours[key], &block)
+        block.call self
+
+        self.neigbours.keys.each do |key|
+            self.neigbours[key].each(&block)
         end
     end
 
-    def find_max_path
-        num = max = 0
+    def max_path
         path = max_path = Array.new
-
-        self.each { |e|
-            num += 1
-            path << e.label
-            if max < num
-                max = num
-                max_path = path.clone
-            end
-        }
-
-        return max_path
-    end
-
-    def find_max
-        num = max = 0
-        path = max_path = Array.new
-        max, max_path = find_max2(num, max, path, max_path)
-        return max, max_path
-    end
-
-    def find_max2(num, max, path, max_path)
         state = self
-        num += 1
-        path << state.label
-        loop do
-            state.neigbours.keys.each do |key|
-                state = state.neigbours[key]
-                max, max_path = state.find_max2(num, max, path, max_path)
-            end
-            break if state.neigbours.empty?
-        end
-        if max < num
-            max = num
-            max_path = path.clone
-        end
-        return max, max_path
+
+        find_max_path(path, max_path, state)
     end
 
     def to_s
         "State: label=#{@label}, neigbours=#{@neigbours}"
+    end
+
+    private
+    def find_max_path(path, max_path, state)
+        path << state.label
+        if state.neigbours.empty?
+            if max_path.length < path.length
+                max_path = path.clone
+            end
+
+            return max_path
+        end
+
+        state.neigbours.keys.each do |key|
+            max_path = find_max_path(path.clone, max_path, state.neigbours[key])
+        end
+
+        return max_path
     end
 end
