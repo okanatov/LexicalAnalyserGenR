@@ -85,6 +85,22 @@ class State
         "State: label=#{@label}, neigbours=#{@neigbours}"
     end
 
+    def apply(string)
+        state = self
+        start_state = self
+        final_states = getFinalStates
+
+        string.each_char do |char|
+            state = move(state, char, final_states, start_state)
+        end
+
+        if final_states.include? state
+            return true
+        else
+            return false
+        end
+    end
+
     private
     def find_max_path(path, max_path, state)
         path << state.label
@@ -101,5 +117,27 @@ class State
         end
 
         return max_path
+    end
+
+    def move(state, char, final_states, start_state)
+        if state.neigbours.has_key? char
+            return state.neigbours[char]
+        else
+            if final_states.include? state
+                return state
+            else
+                return start_state
+            end
+        end
+    end
+
+    def getFinalStates
+        final_states = Array.new
+        self.each do |state|
+            if state.neigbours.empty?
+                final_states << state
+            end
+        end
+        return final_states
     end
 end

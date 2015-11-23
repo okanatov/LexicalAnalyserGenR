@@ -46,4 +46,35 @@ class SimpleNFA < MiniTest::Test
         states = ['a', 'b', 'd', 'e']
         assert_equal(states, max_path)
     end
+
+    def test_simple_apply_abab
+        automata = @nfa_simple.nfa
+        assert(automata.apply("abab"), "The automata cannot apply \"abab\"")
+    end
+
+    def test_simple_not_apply_abba
+        automata = @nfa_simple.nfa
+        assert(!automata.apply("abba"), "The automata can apply \"abba\"")
+    end
+
+    def test_simple_apply_cababd
+        automata = @nfa_simple.nfa
+        assert(automata.apply("cababd"), "The automata cannot apply \"cababd\"")
+    end
+
+    def test_complex_apply_abab
+        assert(@nfa_complex.apply("abde"), "The automata cannot apply \"abde\"")
+    end
+
+    def test_complex_not_apply_abba
+        assert(!@nfa_complex.apply("acde"), "The automata can apply \"abcde\"")
+    end
+
+    def test_complex_apply_cababd
+        assert(@nfa_complex.apply("cabcd"), "The automata cannot apply \"cabcd\"")
+    end
+
+    def test_complex_apply_works
+        assert(!@nfa_complex.apply("ababec"), "The automata can apply \"ababec\"")
+    end
 end
