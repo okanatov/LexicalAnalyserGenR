@@ -49,32 +49,32 @@ class SimpleNFA < MiniTest::Test
 
     def test_simple_apply_abab
         automata = @nfa_simple.nfa
-        assert(automata.apply("abab"), "The automata cannot apply \"abab\"")
+        assert(automata.matches("abab"), "The automata cannot match \"abab\"")
     end
 
     def test_simple_not_apply_abba
         automata = @nfa_simple.nfa
-        assert(!automata.apply("abba"), "The automata can apply \"abba\"")
+        assert(!automata.matches("abba"), "The automata can match \"abba\"")
     end
 
     def test_simple_apply_cababd
         automata = @nfa_simple.nfa
-        assert(automata.apply("cababd"), "The automata cannot apply \"cababd\"")
+        assert(automata.matches("cababd"), "The automata cannot match \"cababd\"")
     end
 
     def test_complex_apply_abab
-        assert(@nfa_complex.apply("abde"), "The automata cannot apply \"abde\"")
+        assert(@nfa_complex.matches("abde"), "The automata cannot match \"abde\"")
     end
 
     def test_complex_not_apply_abba
-        assert(!@nfa_complex.apply("acde"), "The automata can apply \"abcde\"")
+        assert(!@nfa_complex.matches("acde"), "The automata can match \"abcde\"")
     end
 
     def test_complex_apply_cababd
-        assert(@nfa_complex.apply("cabcd"), "The automata cannot apply \"cabcd\"")
+        assert(@nfa_complex.matches("cabcd"), "The automata cannot match \"cabcd\"")
     end
 
     def test_complex_apply_works
-        assert(!@nfa_complex.apply("ababec"), "The automata can apply \"ababec\"")
+        assert(!@nfa_complex.matches("ababec"), "The automata can match \"ababec\"")
     end
 end

@@ -76,68 +76,54 @@ class State
 
     def max_path
         path = max_path = Array.new
-        state = self
-
-        find_max_path(path, max_path, state)
+        self.find_max_path(path, max_path)
     end
 
     def to_s
         "State: label=#{@label}, neigbours=#{@neigbours}"
     end
 
-    def apply(string)
+    def matches(string)
         state = self
-        start_state = self
-        final_states = getFinalStates
 
         string.each_char do |char|
-            state = move(state, char, final_states, start_state)
+            state = move(state, char)
+            return true if state.isFinal
         end
 
-        if final_states.include? state
-            return true
-        else
-            return false
-        end
+        return false
     end
 
-    private
-    def find_max_path(path, max_path, state)
-        path << state.label
-        if state.neigbours.empty?
+    protected
+
+    def find_max_path(path, max_path)
+        path << self.label
+        if self.isFinal
             if max_path.length < path.length
                 max_path = path.clone
             end
 
             return max_path
-        end
+        else
+            self.neigbours.keys.each do |key|
+                max_path = self.neigbours[key].find_max_path(path.clone, max_path)
+            end
 
-        state.neigbours.keys.each do |key|
-            max_path = find_max_path(path.clone, max_path, state.neigbours[key])
+            return max_path
         end
-
-        return max_path
     end
 
-    def move(state, char, final_states, start_state)
+    def isFinal
+        return self.neigbours.empty?
+    end
+
+    private
+
+    def move(state, char)
         if state.neigbours.has_key? char
             return state.neigbours[char]
         else
-            if final_states.include? state
-                return state
-            else
-                return start_state
-            end
+            return self
         end
-    end
-
-    def getFinalStates
-        final_states = Array.new
-        self.each do |state|
-            if state.neigbours.empty?
-                final_states << state
-            end
-        end
-        return final_states
     end
 end
