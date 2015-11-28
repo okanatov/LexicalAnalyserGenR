@@ -3,15 +3,19 @@ require_relative '../lib/nfa'
 
 class SimpleNFA < MiniTest::Test
     def setup
-        @nfa_simple = NFA.new("abab")
-        @nfa_empty = NFA.new("")
+        @nfa_simple = NFA.from_string("abab")
+        assert(nil != @nfa_simple)
 
-        a = State.new("a")
-        b = State.new("b")
-        c = State.new("c")
-        d = State.new("d")
-        e = State.new("e")
+        @nfa_empty = NFA.from_string("")
+        assert_nil(@nfa_empty)
 
+        a = NFA.new("a")
+        assert(nil != a)
+
+        b = NFA.new("b")
+        c = NFA.new("c")
+        d = NFA.new("d")
+        e = NFA.new("e")
 
         d.add_neigbour("e", e)
         b.add_neigbour("c", c)
@@ -21,21 +25,11 @@ class SimpleNFA < MiniTest::Test
         @nfa_complex = a
     end
 
-    def test_simple_nfa_creation
-        assert(nil != @nfa_simple.nfa)
-    end
-
-    def test_empty_nfa_creation
-        assert_nil(@nfa_empty.nfa)
-    end
-
     def test_simple_automata_states
-        automata = @nfa_simple.nfa
-
+        i = 0
         states = ['ia', 'fa', 'fb', 'fa', 'fb']
 
-        i = 0
-        automata.each do |elem|
+        @nfa_simple.each do |elem|
             assert_equal(states[i], elem.label)
             i += 1
         end
@@ -48,33 +42,34 @@ class SimpleNFA < MiniTest::Test
     end
 
     def test_simple_apply_abab
-        automata = @nfa_simple.nfa
-        assert(automata.matches("abab"), "The automata cannot match \"abab\"")
+        assert(@nfa_simple.matches("abab"), "NFA cannot match \"abab\"")
     end
 
     def test_simple_not_apply_abba
-        automata = @nfa_simple.nfa
-        assert(!automata.matches("abba"), "The automata can match \"abba\"")
+        assert(!@nfa_simple.matches("abba"), "NFA can match \"abba\"")
     end
 
     def test_simple_apply_cababd
-        automata = @nfa_simple.nfa
-        assert(automata.matches("cababd"), "The automata cannot match \"cababd\"")
+        assert(@nfa_simple.matches("cababd"), "NFA cannot match \"cababd\"")
     end
 
-    def test_complex_apply_abab
-        assert(@nfa_complex.matches("abde"), "The automata cannot match \"abde\"")
+    def test_complex_apply_abde
+        assert(@nfa_complex.matches("abde"), "NFA cannot match \"abde\"")
     end
 
-    def test_complex_not_apply_abba
-        assert(!@nfa_complex.matches("acde"), "The automata can match \"abcde\"")
+    def test_complex_not_apply_acde
+        assert(!@nfa_complex.matches("acde"), "NFA can match \"acde\"")
     end
 
-    def test_complex_apply_cababd
-        assert(@nfa_complex.matches("cabcd"), "The automata cannot match \"cabcd\"")
+    def test_complex_apply_cabcd
+        assert(@nfa_complex.matches("cabcd"), "NFA cannot match \"cabcd\"")
     end
 
-    def test_complex_apply_works
-        assert(!@nfa_complex.matches("ababec"), "The automata can match \"ababec\"")
+    def test_complex_not_apply_ababec
+        assert(!@nfa_complex.matches("ababec"), "NFA can match \"ababec\"")
+    end
+
+    def test_complex_apply_ababce
+        assert(@nfa_complex.matches("ababce"), "NFA cannot match \"ababce\"")
     end
 end

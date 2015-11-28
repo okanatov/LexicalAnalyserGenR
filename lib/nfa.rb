@@ -1,54 +1,11 @@
 class NFA
-    def initialize(string)
-        @string = string
-        @nfa = nil
-    end
-
-    def nfa
-        expressions = Array.new
-        handle_input_string(expressions)
-
-        return nil if expressions.empty?
-
-        create_nfa_from(expressions)
-
-        return @nfa
-    end
-
-    private
-    def handle_input_string(expressions)
-        @string.each_char do |char|
-            expressions << create_single_expression_from(char)
-        end
-    end
-
-    def create_single_expression_from(char)
-        start = State.new("i#{char}")
-        finish = State.new("f#{char}")
-        start.add_neigbour(char, finish)
-
-        return start
-    end
-
-    def create_nfa_from(expressions)
-        @nfa = expressions.shift
-        state = @nfa.neigbours[@nfa.neigbours.keys.first]
-
-        while not expressions.empty?
-            elem = expressions.shift
-
-            elem.neigbours.keys.each do |key|
-                state.neigbours[key] =
-                    elem.neigbours[key]
-            end
-
-            state = state.neigbours[state.neigbours.keys.first]
-        end
-    end
-end
-
-class State
     attr_reader :label, :neigbours
+
+    def NFA.from_string(string)
+        expressions = create_expressions_from(string)
+        return nil if expressions.empty?
+        return create_nfa_from(expressions)
+    end
 
     def initialize(label)
         @label = label
@@ -74,6 +31,17 @@ class State
         end
     end
 
+    def matches(string)
+        state = self
+
+        string.each_char do |char|
+            state = move(state, char)
+            return true if state.final?
+        end
+
+        return false
+    end
+
     def max_path
         path = max_path = Array.new
         self.find_max_path(path, max_path)
@@ -83,22 +51,15 @@ class State
         "State: label=#{@label}, neigbours=#{@neigbours}"
     end
 
-    def matches(string)
-        state = self
-
-        string.each_char do |char|
-            state = move(state, char)
-            return true if state.isFinal
-        end
-
-        return false
-    end
-
     protected
+
+    def final?
+        return self.neigbours.empty?
+    end
 
     def find_max_path(path, max_path)
         path << self.label
-        if self.isFinal
+        if self.final?
             if max_path.length < path.length
                 max_path = path.clone
             end
@@ -113,17 +74,48 @@ class State
         end
     end
 
-    def isFinal
-        return self.neigbours.empty?
+    private
+
+    def NFA.create_expressions_from(string)
+        expressions = Array.new
+
+        string.each_char do |char|
+            expressions << create_signle_expression_from(char)
+        end
+
+        return expressions
     end
 
-    private
+    def NFA.create_signle_expression_from(char)
+        start = NFA.new("i#{char}")
+        finish = NFA.new("f#{char}")
+        start.add_neigbour(char, finish)
+
+        return start
+    end
+
+    def NFA.create_nfa_from(expressions)
+        nfa = expressions.shift
+        state = nfa.neigbours[nfa.neigbours.keys.first]
+
+        while not expressions.empty?
+            elem = expressions.shift
+
+            elem.neigbours.keys.each do |key|
+                state.neigbours[key] = elem.neigbours[key]
+            end
+
+            state = state.neigbours[state.neigbours.keys.first]
+        end
+
+        return nfa
+    end
 
     def move(state, char)
         if state.neigbours.has_key? char
             return state.neigbours[char]
         else
-            return self
+            return self # TODO: what to do here?
         end
     end
 end
