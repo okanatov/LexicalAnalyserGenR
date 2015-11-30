@@ -10,6 +10,8 @@ class NFA
     def initialize(label)
         @label = label
         @neigbours = Hash.new
+        @old_states = Array.new
+        @new_states = Array.new
     end
 
     def add_neigbour(move_label, state)
@@ -32,11 +34,24 @@ class NFA
     end
 
     def matches(string)
-        state = self
+        @old_states.push(self)
 
         string.each_char do |char|
-            state = move(state, char)
-            return true if state.final?
+            @old_states.each do |old|
+                state = move(old, char)
+                if not @new_states.include?(state)
+                    @new_states.push(state)
+                end
+                @old_states.delete(old)
+            end
+            @old_states = @new_states.clone
+            @new_states.clear
+
+            @old_states.each do |old|
+                if old.final?
+                    return true
+                end
+            end
         end
 
         return false
