@@ -1,31 +1,66 @@
 class Tree
     def initialize(string)
-        parse(string)
+        @string = string
+        @lookahead = @string.getc
+        while @lookahead =~ /[[:blank:]]/
+            @lookahead = @string.getc
+        end
     end
 
-    def parse(string)
-        expression(string)
+    def parse()
+        expr()
     end
 
-    def expression(string)
-        lpart = sym(string)
-        eq = string.getc
-        rpart = right_part(string)
-        p eq
-        p lpart
+    def expr()
+        result = term()
+        while true do
+            if @lookahead == '+'
+                match('+')
+                result += term()
+            elsif @lookahead == '-'
+                match('-')
+                result -= term()
+            else
+                break
+            end
+        end
+        return result
     end
 
-    def right_part(string)
-        op1 = sym(string)
-        operator = sym(string)
-        op2 = sym(string)
-        p operator
-        p op1
-        p op2
+    def term()
+        result = factor()
+        while true do
+            if @lookahead == '*'
+                match('*')
+                result *= factor()
+            elsif @lookahead == '/'
+                match('/')
+                result /= term()
+            else
+                break
+            end
+        end
+        return result
     end
 
-    def sym(string)
-        return string.getc
+    def factor()
+        if @lookahead =~ /[[:digit:]]/
+            temp = @lookahead
+            match(@lookahead)
+            return temp.to_i
+        else
+            raise IOError
+        end
     end
 
+    def match(char)
+        if @lookahead == char
+            @lookahead = @string.getc
+            while @lookahead =~ /[[:blank:]]/
+                @lookahead = @string.getc
+            end
+        else
+            raise IOError
+        end
+    end
 end
