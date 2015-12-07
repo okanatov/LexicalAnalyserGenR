@@ -1,5 +1,5 @@
 class Node
-    attr_reader :left, :right
+    attr_reader :data, :left, :right
 
     def initialize(data, left, right)
         @data = data
@@ -24,19 +24,21 @@ class Tree
 
     def parse()
         @tree = expr()
-        tree_print(@tree)
+        traversal(@tree)
     end
 
     private
 
-    def tree_print(node)
-        if node == nil
-            return
+    def traversal(node)
+        return node.data.to_i if node.left == nil and node.right == nil
+        left = traversal(node.left)
+        right = traversal(node.right)
+        
+        if node.data == '+'
+            return left + right
+        elsif node.data == '*'
+            return left * right
         end
-
-        tree_print(node.left)
-        puts node
-        tree_print(node.right)
     end
 
     def expr()
