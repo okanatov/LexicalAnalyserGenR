@@ -30,25 +30,32 @@ class Tree
     private
 
     def traversal(node)
-        return node.data.to_i if node.left == nil and node.right == nil
+        return puts node if node.left == nil and node.right == nil
         left = traversal(node.left)
         right = traversal(node.right)
         
         if node.data == '+'
-            return left + right
+            puts "+ Left=#{node.left}, Right=#{node.right}"
         elsif node.data == '*'
-            return left * right
+            puts "* Left=#{node.left}, Right=#{node.right}"
         end
     end
 
+    # E = term R
+    # R = + term R | * term R | e
+    # term = id | (E)
+
     def expr()
         left = term()
-        while true do
+        while true
             if @lookahead == '+'
                 match('+')
                 right = term()
-
-                left = Node.new('+', left, right)
+                left = plus_method(left, right)
+            elsif @lookahead == '*'
+                match('*')
+                right = term()
+                left = star_method(left, right)
             else
                 break
             end
@@ -58,27 +65,15 @@ class Tree
     end
 
     def term()
-        left = factor()
-        while true do
-            if @lookahead == '*'
-                match('*')
-                right = factor()
-
-                left = Node.new('*', left, right)
-            else
-                break
-            end
-        end
-
-        return left
-    end
-
-    def factor()
         if @lookahead =~ /[[:digit:]]/
             node = Node.new(@lookahead, nil, nil)
             match(@lookahead)
-
             return node
+        elsif @lookahead == '('
+            match('(')
+            temp = expr()
+            match(')')
+            return temp
         else
             raise IOError
         end
@@ -94,5 +89,13 @@ class Tree
         else
             raise IOError
         end
+    end
+
+    def plus_method(left, right)
+        return Node.new("+", left, right)
+    end
+
+    def star_method(left, right)
+        return Node.new("*", left, right)
     end
 end
