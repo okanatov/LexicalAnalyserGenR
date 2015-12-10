@@ -38,6 +38,8 @@ class Tree
             puts "+ Left=#{node.left}, Right=#{node.right}"
         elsif node.data == '*'
             puts "* Left=#{node.left}, Right=#{node.right}"
+        elsif node.data == 'c'
+            puts "c Left=#{node.left}, Right=#{node.right}"
         end
     end
 
@@ -56,6 +58,9 @@ class Tree
                 match('*')
                 right = term()
                 left = star_method(left, right)
+            elsif @lookahead =~ /[[:digit:]]/
+                right = term()
+                left = concat_method(left, right)
             else
                 break
             end
@@ -97,5 +102,9 @@ class Tree
 
     def star_method(left, right)
         return Node.new("*", left, right)
+    end
+
+    def concat_method(left, right)
+        return Node.new("c", left, right)
     end
 end
