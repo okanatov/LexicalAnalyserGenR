@@ -1,17 +1,18 @@
+# Represents Romans one numbers
 class Ones
-    def getOne
-        'I'
-    end
+  def one
+    'I'
+  end
 
-    def getFive
-        'V'
-    end
+  def five
+    'V'
+  end
 
-    def getTen
-        'X'
-    end
+  def ten
+    'X'
+  end
 
-    def isEnd(char)
-        return char.nil?
-    end
+  def end?(char)
+    char.nil?
+  end
 end
