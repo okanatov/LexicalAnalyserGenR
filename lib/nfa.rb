@@ -12,8 +12,6 @@ class NFA
   def initialize(label)
     @label = label
     @neigbours = {}
-    @old_states = []
-    @new_states = []
   end
 
   def add_neigbour(move_label, state)
@@ -36,23 +34,42 @@ class NFA
   end
 
   def matches(string)
-    @old_states.push(self)
+    @found = false
+    (0..string.length).each do |i|
+      bt(self, string[i..string.length])
+      break if @found
+    end
+    @found
+  end
 
-    string.each_char do |char|
-      @old_states.each do |old|
-        state = move(old, char)
-        @new_states.push(state) unless @new_states.include?(state)
-        @old_states.delete(old)
-      end
-      @old_states = @new_states.clone
-      @new_states.clear
-
-      @old_states.each do |old|
-        return true if old.final?
-      end
+  def bt(state, string)
+    return if reject(state, string)
+    if accept(state)
+      @found = true
+      return
     end
 
-    false
+    s = first(state, string)
+    s.each do |key|
+      bt(state.neigbours[key], string[1..string.length])
+      break if @found
+    end
+  end
+
+  def reject(state, string)
+    if state.final? || (state.neigbours.key? string[0..0])
+      return false
+    else
+      return true
+    end
+  end
+
+  def accept(state)
+    state.final?
+  end
+
+  def first(state, string)
+    state.neigbours.keys.select { |i| i == string[0..0] }
   end
 
   def max_path
@@ -84,8 +101,6 @@ class NFA
       return max_path
     end
   end
-
-  private
 
   def self.create_expressions_from(string)
     expressions = []
@@ -120,13 +135,5 @@ class NFA
     end
 
     nfa
-  end
-
-  def move(state, char)
-    if state.neigbours.key? char
-      return state.neigbours[char]
-    else
-      return self # TODO: what to do here?
-    end
   end
 end

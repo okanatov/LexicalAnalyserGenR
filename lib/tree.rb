@@ -1,18 +1,3 @@
-# Represents a node in a tree
-class Node
-  attr_reader :data, :left, :right
-
-  def initialize(data, left, right)
-    @data = data
-    @left = left
-    @right = right
-  end
-
-  def to_s
-    "Node: data=#{@data}, left=#{@left}, right=#{@right}"
-  end
-end
-
 # Represents a tree
 class Tree
   def initialize(string)
@@ -38,8 +23,8 @@ class Tree
       puts "+ Left=#{node.left}, Right=#{node.right}"
     elsif node.data == '*'
       puts "* Left=#{node.left}, Right=#{node.right}"
-    elsif node.data == 'c'
-      puts "c Left=#{node.left}, Right=#{node.right}"
+    elsif node.data == '.'
+      puts ". Left=#{node.left}, Right=#{node.right}"
     end
   end
 
@@ -103,6 +88,21 @@ class Tree
   end
 
   def concat_method(left, right)
-    Node.new('c', left, right)
+    Node.new('.', left, right)
+  end
+end
+
+# Represents a node in a tree
+class Node
+  attr_reader :data, :left, :right
+
+  def initialize(data, left, right)
+    @data = data
+    @left = left
+    @right = right
+  end
+
+  def to_s
+    "Node: data=#{@data}, left=#{@left}, right=#{@right}"
   end
 end
