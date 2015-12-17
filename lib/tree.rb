@@ -2,68 +2,28 @@
 class Tree
   def initialize(string)
     @string = string
-    @lookahead = @string.getc
-
+    @lookahead = ' '
     @lookahead = @string.getc while @lookahead =~ /[[:blank:]]/
   end
 
-  def parse
-    @tree = expr
-    traversal(@tree)
+  def expr
+    if @lookahead == '('
+      match('(')
+      left = expr
+      match(')')
+    else
+      left = term
+    end
+    rest(left)
   end
 
   private
 
-  def traversal(node)
-    return puts node if node.left.nil? && node.right.nil?
-    traversal(node.left)
-    traversal(node.right)
-
-    if node.data == '+'
-      puts "+ Left=#{node.left}, Right=#{node.right}"
-    elsif node.data == '*'
-      puts "* Left=#{node.left}, Right=#{node.right}"
-    elsif node.data == '.'
-      puts ". Left=#{node.left}, Right=#{node.right}"
-    end
-  end
-
-  # E = term R
-  # R = + term R | * term R | e
-  # term = id | (E)
-
-  def expr
-    left = term
-    loop do
-      if @lookahead == '+'
-        match('+')
-        right = term
-        left = plus_method(left, right)
-      elsif @lookahead == '*'
-        match('*')
-        right = term
-        left = star_method(left, right)
-      elsif @lookahead =~ /[[:digit:]]/
-        right = term
-        left = concat_method(left, right)
-      else
-        break
-      end
-    end
-
-    left
-  end
-
   def term
-    if @lookahead =~ /[[:digit:]]/
+    if @lookahead =~ /[[:alnum:]]/
       node = Node.new(@lookahead, nil, nil)
       match(@lookahead)
-      return node
-    elsif @lookahead == '('
-      match('(')
-      temp = expr
-      match(')')
-      return temp
+      node
     else
       fail IOError
     end
@@ -79,22 +39,54 @@ class Tree
     end
   end
 
-  def plus_method(left, right)
-    Node.new('+', left, right)
+  def rest(left)
+    if @lookahead == '|'
+      match('|')
+      right = expr
+      left = alternate(left, right)
+      left = rest(left)
+    elsif @lookahead == '*'
+      match('*')
+      left = star(left)
+      left = rest(left)
+    elsif @lookahead =~ /[[:alnum:]]/
+      right = term
+      left = concat(left, right)
+      left = rest(left)
+    elsif @lookahead == '('
+      match('(')
+      right = expr
+      match(')')
+      left = concat(left, right)
+      left = rest(left)
+    end
+    left
   end
 
-  def star_method(left, right)
-    Node.new('*', left, right)
-  end
-
-  def concat_method(left, right)
+  def concat(left, right)
     Node.new('.', left, right)
+  end
+
+  def alternate(left, right)
+    Node.new('|', left, right)
+  end
+
+  def star(node)
+    if !node.right.nil?
+      temp = node.right
+      right = Node.new('*', temp, '*')
+      node.right = right
+    else
+      node = Node.new('*', node, '*')
+    end
+    node
   end
 end
 
 # Represents a node in a tree
 class Node
-  attr_reader :data, :left, :right
+  attr_reader :data, :left
+  attr_accessor :right
 
   def initialize(data, left, right)
     @data = data
