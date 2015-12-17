@@ -75,18 +75,16 @@ class Tree
     if !node.right.nil?
       temp = node.right
       right = Node.new('*', temp, '*')
-      node.right = right
+      concat(node.left, right)
     else
-      node = Node.new('*', node, '*')
+      Node.new('*', node, '*')
     end
-    node
   end
 end
 
 # Represents a node in a tree
 class Node
-  attr_reader :data, :left
-  attr_accessor :right
+  attr_reader :data, :left, :right
 
   def initialize(data, left, right)
     @data = data
