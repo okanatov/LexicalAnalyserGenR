@@ -1,12 +1,38 @@
+require 'stringio'
+require_relative './syntax_tree'
+
 # Creates an NFA from a string passed in the constructor
 # and checks whether the NFA matches a given string.
 class NFA
-  attr_reader :label, :neigbours
+  attr_reader :label, :neigbours, :end
 
   def self.from_string(string)
-    expressions = create_expressions_from(string)
-    return nil if expressions.empty?
-    create_nfa_from(expressions)
+    tree = SyntaxTree.new(StringIO.new(string))
+    node = tree.expr
+
+    from_syntax_tree(node)
+  end
+
+  def self.from_syntax_tree(node)
+    if node.left.nil? && node.right.nil?
+      return create_signle_expression_from(node.data)
+    end
+
+    left = from_syntax_tree(node.left)
+    right = from_syntax_tree(node.right)
+
+    if node.data == '.'
+      left_end = left
+
+      until left_end.neigbours.empty?
+        left_end = left_end.neigbours[left_end.neigbours.keys.first]
+      end
+
+      right_key = right.neigbours.keys.first
+      left_end.add_neigbour(right_key, right.neigbours[right_key])
+
+      return left
+    end
   end
 
   def initialize(label)
@@ -36,6 +62,7 @@ class NFA
   end
 
   def matches(string)
+    @end = 0
     @old_states.push(self)
 
     string.each_char do |char|
@@ -50,12 +77,15 @@ class NFA
       @old_states.each do |old|
         return true if old.final?
       end
+      @end += 1
     end
+    @end = 0
     false
   end
 
   def matches_bt(string)
     @found = false
+    @end = -1
     (0..string.length).each do |i|
       bt(self, string[i..string.length])
       break if @found
@@ -107,6 +137,7 @@ class NFA
       bt(state.neigbours[key], string[1..string.length])
       break if @found
     end
+    @end += 1
   end
 
   def reject(state, string)
