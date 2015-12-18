@@ -73,4 +73,36 @@ class SimpleNFA < MiniTest::Test
   def test_complex_apply_ababce
     assert(@nfa_complex.matches('ababce'), "NFA cannot match \"ababce\"")
   end
+
+  def test_bt_simple_apply_abab
+    assert(@nfa_simple.matches_bt('abab'), "NFA cannot match \"abab\"")
+  end
+
+  def test_bt_simple_not_apply_abba
+    assert(!@nfa_simple.matches_bt('abba'), "NFA can match \"abba\"")
+  end
+
+  def test_bt_simple_apply_cababd
+    assert(@nfa_simple.matches_bt('cababd'), "NFA cannot match \"cababd\"")
+  end
+
+  def test_bt_complex_apply_abde
+    assert(@nfa_complex.matches_bt('abde'), "NFA cannot match \"abde\"")
+  end
+
+  def test_bt_complex_not_apply_acde
+    assert(!@nfa_complex.matches_bt('acde'), "NFA can match \"acde\"")
+  end
+
+  def test_bt_complex_apply_cabcd
+    assert(@nfa_complex.matches_bt('cabcd'), "NFA cannot match \"cabcd\"")
+  end
+
+  def test_bt_complex_not_apply_ababec
+    assert(!@nfa_complex.matches_bt('ababec'), "NFA can match \"ababec\"")
+  end
+
+  def test_bt_complex_apply_ababce
+    assert(@nfa_complex.matches_bt('ababce'), "NFA cannot match \"ababce\"")
+  end
 end
