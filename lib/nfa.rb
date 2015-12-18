@@ -95,10 +95,6 @@ class NFA
 
   private
 
-  def first(state, string)
-    state.neigbours.keys.select { |i| i == string[0..0] }
-  end
-
   def bt(state, string)
     return if reject(state, string)
     if accept(state)
@@ -125,6 +121,9 @@ class NFA
     state.final?
   end
 
+  def first(state, string)
+    state.neigbours.keys.select { |i| i == string[0..0] }
+  end
 
   def self.create_expressions_from(string)
     expressions = []

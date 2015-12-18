@@ -1,5 +1,5 @@
-# Represents a tree
-class Tree
+# Represents a syntax tree
+class SyntaxTree
   def initialize(string)
     @string = string
     @lookahead = ' '
@@ -19,21 +19,20 @@ class Tree
 
   private
 
-  def term
-    if @lookahead =~ /[[:alnum:]]/
-      node = Node.new(@lookahead, nil, nil)
-      match(@lookahead)
-      node
+  def match(char)
+    if @lookahead == char
+      @lookahead = ' '
+      @lookahead = @string.getc while @lookahead =~ /[[:blank:]]/
     else
       fail IOError
     end
   end
 
-  def match(char)
-    if @lookahead == char
-      @lookahead = @string.getc
-
-      @lookahead = @string.getc while @lookahead =~ /[[:blank:]]/
+  def term
+    if @lookahead =~ /[[:alnum:]]/
+      node = SyntaxTreeNode.new(@lookahead, nil, nil)
+      match(@lookahead)
+      node
     else
       fail IOError
     end
@@ -63,27 +62,27 @@ class Tree
     left
   end
 
-  def concat(left, right)
-    Node.new('.', left, right)
-  end
-
   def alternate(left, right)
-    Node.new('|', left, right)
+    SyntaxTreeNode.new('|', left, right)
   end
 
   def star(node)
     if !node.right.nil?
       temp = node.right
-      right = Node.new('*', temp, '*')
+      right = SyntaxTreeNode.new('*', temp, '*')
       concat(node.left, right)
     else
-      Node.new('*', node, '*')
+      SyntaxTreeNode.new('*', node, '*')
     end
+  end
+
+  def concat(left, right)
+    SyntaxTreeNode.new('.', left, right)
   end
 end
 
-# Represents a node in a tree
-class Node
+# Represents a node in the syntax tree
+class SyntaxTreeNode
   attr_reader :data, :left, :right
 
   def initialize(data, left, right)
