@@ -77,8 +77,7 @@ class NFA
     string.each_char do |char|
       @old_states.each do |old|
         state = move(old, char)
-        @new_states.push(state) unless @new_states.include? state
-        @old_states.delete(old)
+        add_state(state) unless @new_states.include? state
       end
       @old_states = @new_states.clone
       @new_states.clear
@@ -98,6 +97,7 @@ class NFA
     (0..string.length).each do |i|
       bt(self, string[i..string.length])
       break if @found
+      @end += 1
     end
     @found
   end
@@ -133,6 +133,13 @@ class NFA
   end
 
   private
+
+  def add_state(state)
+    @new_states.push state
+    state.empty_transitions.each do |transition|
+      add_state(transition) unless @new_states.include? transition
+    end
+  end
 
   def bt(state, string)
     return if reject(state, string)
@@ -181,6 +188,8 @@ class NFA
   def move(state, char)
     if state.neigbours.key? char
       return state.neigbours[char]
+    elsif !state.empty_transitions.empty?
+      return state.empty_transitions[0]
     else
       return self # TODO: what to return?
     end

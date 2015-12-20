@@ -9,7 +9,6 @@ class SimpleNFA < MiniTest::Test
   end
 
   def test_simple_apply_abcdef
-    skip
     assert(@nfa_simple.matches('abcdef'), "NFA cannot match \"abc\"")
     assert_equal(2, @nfa_simple.end)
   end
@@ -17,5 +16,25 @@ class SimpleNFA < MiniTest::Test
   def test_bt_simple_apply_abcdef
     assert(@nfa_simple.matches_bt('abcdef'), "NFA cannot match \"abc\"")
     assert_equal(2, @nfa_simple.end)
+  end
+
+  def test_simple_apply_dabcef
+    assert(@nfa_simple.matches('dabcef'), "NFA cannot match \"abc\"")
+    assert_equal(3, @nfa_simple.end)
+  end
+
+  def test_bt_simple_apply_dabcef
+    assert(@nfa_simple.matches_bt('dabcef'), "NFA cannot match \"abc\"")
+    assert_equal(3, @nfa_simple.end)
+  end
+
+  def test_simple_apply_dabc
+    assert(@nfa_simple.matches('dbabc'), "NFA cannot match \"abc\"")
+    assert_equal(4, @nfa_simple.end)
+  end
+
+  def test_bt_simple_apply_dabc
+    assert(@nfa_simple.matches_bt('dbabc'), "NFA cannot match \"abc\"")
+    assert_equal(4, @nfa_simple.end)
   end
 end
