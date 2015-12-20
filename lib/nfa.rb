@@ -28,8 +28,7 @@ class NFA
         left_end = left_end.neigbours[left_end.neigbours.keys.first]
       end
 
-      right_key = right.neigbours.keys.first
-      left_end.add_neigbour(right_key, right.neigbours[right_key])
+      left_end.add_neigbour(:empty, right)
 
       return left
     end
@@ -134,14 +133,18 @@ class NFA
 
     s = first(state, string)
     s.each do |key|
-      bt(state.neigbours[key], string[1..string.length])
+      if key == :empty
+        bt(state.neigbours[key], string[0..string.length])
+      else
+        bt(state.neigbours[key], string[1..string.length])
+        @end += 1
+      end
       break if @found
     end
-    @end += 1
   end
 
   def reject(state, string)
-    if state.final? || (state.neigbours.key? string[0..0])
+    if state.final? || (state.neigbours.key? string[0..0]) || (state.neigbours.key? :empty)
       return false
     else
       return true
@@ -153,17 +156,11 @@ class NFA
   end
 
   def first(state, string)
-    state.neigbours.keys.select { |i| i == string[0..0] }
-  end
-
-  def self.create_expressions_from(string)
-    expressions = []
-
-    string.each_char do |char|
-      expressions << create_signle_expression_from(char)
+    keys = state.neigbours.keys.select { |i| i == string[0..0] }
+    if state.neigbours.has_key? :empty
+      keys << :empty
     end
-
-    expressions
+    keys
   end
 
   def self.create_signle_expression_from(char)
@@ -172,22 +169,6 @@ class NFA
     start.add_neigbour(char, finish)
 
     start
-  end
-
-  def self.create_nfa_from(expressions)
-    nfa = expressions.shift
-    state = nfa.neigbours[nfa.neigbours.keys.first]
-
-    until expressions.empty?
-      elem = expressions.shift
-
-      elem.neigbours.keys.each do |key|
-        state.neigbours[key] = elem.neigbours[key]
-      end
-
-      state = state.neigbours[state.neigbours.keys.first]
-    end
-    nfa
   end
 
   def move(state, char)
