@@ -4,7 +4,7 @@ require_relative './syntax_tree'
 # Creates an NFA from a string passed in the constructor
 # and checks whether the NFA matches a given string.
 class NFA
-  attr_reader :label, :neigbours, :end
+  attr_reader :label, :neigbours, :end, :empty_transitions
 
   def self.from_string(string)
     tree = SyntaxTree.new(StringIO.new(string))
@@ -24,11 +24,16 @@ class NFA
     if node.data == '.'
       left_end = left
 
-      until left_end.neigbours.empty?
+      until left_end.empty_transitions.empty? && left_end.neigbours.empty?
         left_end = left_end.neigbours[left_end.neigbours.keys.first]
+        if left_end.neigbours.empty?
+          if !left_end.empty_transitions.empty?
+            left_end = left_end.empty_transitions[0]
+          end
+        end
       end
 
-      left_end.add_neigbour(:empty, right)
+      left_end.add_empty(right)
 
       return left
     end
@@ -37,12 +42,17 @@ class NFA
   def initialize(label)
     @label = label
     @neigbours = {}
+    @empty_transitions = []
     @old_states = []
     @new_states = []
   end
 
   def add_neigbour(move_label, state)
     @neigbours[move_label] = state
+  end
+
+  def add_empty(state)
+    @empty_transitions << state
   end
 
   def each(&block)
@@ -98,13 +108,13 @@ class NFA
   end
 
   def to_s
-    "State: label=#{@label}, neigbours=#{@neigbours}"
+    "State: label=#{@label}, neigbours=#{@neigbours}, empty_transitions=#{@empty_transitions}"
   end
 
   protected
 
   def final?
-    neigbours.empty?
+    neigbours.empty? && empty_transitions.empty?
   end
 
   def find_max_path(path, max_path)
@@ -133,18 +143,19 @@ class NFA
 
     s = first(state, string)
     s.each do |key|
-      if key == :empty
-        bt(state.neigbours[key], string[0..string.length])
-      else
-        bt(state.neigbours[key], string[1..string.length])
-        @end += 1
-      end
+      bt(state.neigbours[key], string[1..string.length])
+      @end += 1
+      break if @found
+    end
+
+    state.empty_transitions.each do |transition|
+      bt(transition, string[0..string.length])
       break if @found
     end
   end
 
   def reject(state, string)
-    if state.final? || (state.neigbours.key? string[0..0]) || (state.neigbours.key? :empty)
+    if state.final? || (state.neigbours.key? string[0..0]) || !state.empty_transitions.empty?
       return false
     else
       return true
@@ -156,11 +167,7 @@ class NFA
   end
 
   def first(state, string)
-    keys = state.neigbours.keys.select { |i| i == string[0..0] }
-    if state.neigbours.has_key? :empty
-      keys << :empty
-    end
-    keys
+    state.neigbours.keys.select { |i| i == string[0..0] }
   end
 
   def self.create_signle_expression_from(char)
