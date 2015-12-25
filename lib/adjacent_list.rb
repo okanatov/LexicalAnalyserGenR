@@ -1,13 +1,12 @@
 class AdjacentList
-
-  attr_accessor :start, :end
+  attr_accessor :start
 
   def initialize
     @vertices = []
   end
 
   def add_edge(x, y, label)
-    if @vertices[x] == nil
+    if @vertices[x].nil?
       @vertices[x] = []
       @vertices[x][0] = { label => y }
     else
@@ -16,52 +15,105 @@ class AdjacentList
     end
   end
 
-  def to_s
-    @vertices.to_s
-  end
-
-  def vertices
-    vertices = []
-    @vertices.each_index do |e|
-      vertices << e
+  def +(other)
+    start_idx = last + 1
+    other.vertices.each_index do |i|
+      next if other.vertices[i].nil?
+      other.vertices[i].select! do |e|
+        e.each_key { |k| e[k] = e[k] + start_idx }
+      end
+      @vertices[start_idx + i] = other.vertices[i]
     end
-    vertices
+    @vertices
   end
 
   def labels(x)
-    if @vertices[x] == nil
+    if @vertices[x].nil?
       return []
     else
-      keys = []
-      @vertices[x].each do |e|
-        e.each_key do |k|
-          keys << k
-        end
+      @vertices[x].collect { |e| e.keys.first }
+    end
+  end
+
+  def neigbours(x)
+    if @vertices[x].nil?
+      return []
+    else
+      @vertices[x].collect { |e| e.values.first }
+    end
+  end
+
+  def neigbour(x, label)
+    if @vertices[x].nil?
+      return []
+    else
+      neigbours = @vertices[x].select { |e| e.key?(label) }
+      neigbours.collect { |e| e.values.first }
+    end
+  end
+
+  def set_neigbour(x, label, y)
+    if @vertices[x].nil?
+      return []
+    else
+      @vertices[x].collect! do |e|
+        e[label] = y if e.key?(label)
+        e
       end
-      keys
     end
   end
 
   def dfs
     @path = []
-    @found = false
+    @string = 'aca'
     dfs_visit(@start)
     @path
   end
 
+  def matches(string)
+    @string = string
+    dfs
+    if @found
+      true
+    else
+      false
+    end
+  end
+
+  def last
+    all_vertices = (0..@vertices.length).collect { |e| neigbours(e) }
+    all_vertices.flatten!.sort!.last
+  end
+
+  def to_s
+    @vertices.to_s
+  end
+
+  protected
+
+  attr_reader :vertices
+
   private
 
   def dfs_visit(vertix)
-    @found = true if vertix == @end
-    return if @vertices[vertix] == nil || @found
+    @found = true if final?(vertix) && @string.include?(@path.join)
+    return if @vertices[vertix].nil? || @found
 
-    @vertices[vertix].each do |e|
-      e.each_key do |k|
-        @path << k
-        dfs_visit(e[k])
-        @path.pop unless @found
+    labels(vertix).each do |e|
+      @path << e unless e == :empty
+      neigbours = neigbour(vertix, e)
+      neigbours.each { |n| dfs_visit(n) }
+
+      if @found
+        break
+      else
+        @path.pop unless e == :empty
       end
-      break if @found
     end
+  end
+
+  def final?(vertix)
+    final_states = (0..last).select { |e| @vertices.at(e).nil? }
+    final_states.include?(vertix)
   end
 end
