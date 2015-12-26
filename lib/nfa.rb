@@ -1,5 +1,6 @@
 require 'stringio'
 require_relative './syntax_tree'
+require_relative './adjacent_list'
 
 # Creates an NFA from a string passed in the constructor
 # and checks whether the NFA matches a given string.
@@ -10,27 +11,23 @@ class NFA
     tree = SyntaxTree.new(StringIO.new(string))
     node = tree.expr
 
-    from_syntax_tree(node)
+    graph = AdjacentList.new
+    from_syntax_tree(node, graph)
+    graph.start = 0
+    graph
   end
 
-  def self.from_syntax_tree(node)
+  def self.from_syntax_tree(node, graph)
     if node.left.nil? && node.right.nil?
-      return create_signle_expression_from(node.data)
+      return create_single_expression_from(node.data, graph)
     end
 
-    left = from_syntax_tree(node.left)
-    right = from_syntax_tree(node.right)
+    left = from_syntax_tree(node.left, graph)
+    right = from_syntax_tree(node.right, graph)
 
     if node.data == '.'
-      left_end = left
-
-      until left_end.neigbours.empty?
-        left_end = left_end.neigbours[left_end.neigbours.keys.first][0]
-      end
-
-      left_end.add_neigbour(:empty, right)
-
-      return left
+      graph.add_edge(left[1], right[0], :empty)
+      return [left[0], right[1]]
     end
   end
 
@@ -42,9 +39,7 @@ class NFA
   end
 
   def add_neigbour(move_label, state)
-    unless @neigbours.key? move_label
-      @neigbours[move_label] = []
-    end
+    @neigbours[move_label] = [] unless @neigbours.key? move_label
     @neigbours[move_label] << state
   end
 
@@ -63,26 +58,26 @@ class NFA
     end
   end
 
-  def matches(string)
-    @end = 0
-    @old_states.push(self)
+  # def matches(string)
+  #  @end = 0
+  #  @old_states.push(self)
 
-    string.each_char do |char|
-      @old_states.each do |old|
-        state = move(old, char)
-        state.each { |e| add_state(e) unless @new_states.include? e }
-      end
-      @old_states = @new_states.clone
-      @new_states.clear
+  #  string.each_char do |char|
+  #    @old_states.each do |old|
+  #      state = move(old, char)
+  #      state.each { |e| add_state(e) unless @new_states.include? e }
+  #    end
+  #    @old_states = @new_states.clone
+  #    @new_states.clear
 
-      @old_states.each do |old|
-        return true if old.final?
-      end
-      @end += 1
-    end
-    @end = 0
-    false
-  end
+  #    @old_states.each do |old|
+  #      return true if old.final?
+  #    end
+  #    @end += 1
+  #  end
+  #  @end = 0
+  #  false
+  # end
 
   def matches_bt(string)
     @found = false
@@ -171,18 +166,14 @@ class NFA
 
   def first(state, string)
     keys = state.neigbours.keys.select { |i| i == string[0..0] }
-    if state.neigbours.key? :empty
-      keys << :empty
-    end
+    keys << :empty if state.neigbours.key? :empty
     keys
   end
 
-  def self.create_signle_expression_from(char)
-    start = NFA.new("i#{char}")
-    finish = NFA.new("f#{char}")
-    start.add_neigbour(char, finish)
-
-    start
+  def self.create_single_expression_from(char, graph)
+    start_idx = graph.last + 1
+    graph.add_edge(start_idx, start_idx + 1, char)
+    [start_idx, start_idx + 1]
   end
 
   def move(state, char)

@@ -1,5 +1,5 @@
 class AdjacentList
-  attr_accessor :start
+  attr_accessor :start, :end
 
   def initialize
     @vertices = []
@@ -65,24 +65,17 @@ class AdjacentList
 
   def dfs
     @path = []
-    @string = 'aca'
     dfs_visit(@start)
     @path
   end
 
-  def matches(string)
-    @string = string
-    dfs
-    if @found
-      true
-    else
-      false
-    end
-  end
-
   def last
     all_vertices = (0..@vertices.length).collect { |e| neigbours(e) }
-    all_vertices.flatten!.sort!.last
+    if all_vertices.flatten!.empty?
+      return -1
+    else
+      all_vertices.sort!.last
+    end
   end
 
   def to_s
@@ -96,19 +89,17 @@ class AdjacentList
   private
 
   def dfs_visit(vertix)
-    @found = true if final?(vertix) && @string.include?(@path.join)
+    @found = true if vertix == @end
     return if @vertices[vertix].nil? || @found
 
     labels(vertix).each do |e|
-      @path << e unless e == :empty
+      @path << e
+
       neigbours = neigbour(vertix, e)
       neigbours.each { |n| dfs_visit(n) }
 
-      if @found
-        break
-      else
-        @path.pop unless e == :empty
-      end
+      break if @found
+      @path.pop
     end
   end
 

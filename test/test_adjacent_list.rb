@@ -12,6 +12,7 @@ class AdjacentListTest < MiniTest::Test
     @g.add_edge(3, 5, 'a')
 
     @g.start = 0
+    @g.end = 5
   end
 
   def test_to_s
@@ -64,7 +65,12 @@ class AdjacentListTest < MiniTest::Test
     assert_equal("[[{\"a\"=>1}], [{\"b\"=>2}], nil, [{\"a\"=>4}], [{\"b\"=>5}, {\"c\"=>6}, {\"b\"=>9}], [{\"d\"=>7}], [{\"a\"=>8}]]", @g.to_s)
   end
 
-  def test_matches_aca
-    assert(@g.matches('acab') == true)
+  def test_last
+    assert_equal(6, @g.last)
+  end
+
+  def test_last_of_empty_graph
+    e = AdjacentList.new
+    assert_equal(-1, e.last)
   end
 end
