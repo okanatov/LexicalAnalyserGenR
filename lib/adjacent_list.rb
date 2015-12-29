@@ -1,4 +1,13 @@
+# Author::     Oleg Kanatov  (mailto:okanatov@gmail.com)
+# Copyright::  Copyright (c) 2015
+# License::    Distributes under the same terms as Ruby
+
+# This class represents a graph as an adjacency list, i.e. a collection
+# of unordered lists, one for each vertex in the graph.
+# Each list describes the set of neighbors of its vertex.
+
 class AdjacentList
+
   attr_accessor :start, :end
 
   def initialize
@@ -78,6 +87,11 @@ class AdjacentList
     end
   end
 
+  def final?(vertix)
+    final_states = (0..last).select { |e| @vertices.at(e).nil? }
+    final_states.include?(vertix)
+  end
+
   def to_s
     @vertices.to_s
   end
@@ -93,18 +107,14 @@ class AdjacentList
     return if @vertices[vertix].nil? || @found
 
     labels(vertix).each do |e|
-      @path << e
+      @path << e unless e == :empty
 
       neigbours = neigbour(vertix, e)
       neigbours.each { |n| dfs_visit(n) }
 
       break if @found
-      @path.pop
-    end
-  end
+      @path.pop unless e == :empty
 
-  def final?(vertix)
-    final_states = (0..last).select { |e| @vertices.at(e).nil? }
-    final_states.include?(vertix)
+    end
   end
 end
