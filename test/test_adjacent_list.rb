@@ -1,9 +1,16 @@
+require 'simplecov'
+if ENV["COVERAGE"]
+  SimpleCov.start do
+    add_filter "test/"
+  end
+end
+
 require 'minitest/autorun'
 require_relative '../lib/adjacent_list'
 
 class AdjacentListTest < MiniTest::Test
   def setup
-    @g = AdjacentList.new
+    @g = AdjacentList.new # a graph structure under test
     @g.add_edge(0, 1, 'a')
     @g.add_edge(1, 2, 'b')
     @g.add_edge(1, 3, 'c')
