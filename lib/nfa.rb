@@ -29,7 +29,7 @@ class NFA
     right = from_syntax_tree(node.right, graph)
 
     if node.data == '.'
-      graph.add_edge(left[1], right[0], :empty)
+      graph.add_edge(left[1], :empty, right[0])
       return [left[0], right[1]]
     end
   end
@@ -95,7 +95,7 @@ class NFA
 
   def self.create_single_expression_from(char, graph)
     start_idx = graph.last + 1
-    graph.add_edge(start_idx, start_idx + 1, char)
+    graph.add_edge(start_idx, char, start_idx + 1)
     [start_idx, start_idx + 1]
   end
 

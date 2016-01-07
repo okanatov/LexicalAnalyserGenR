@@ -11,12 +11,12 @@ require_relative '../lib/adjacent_list'
 class AdjacentListTest < MiniTest::Test
   def setup
     @g = AdjacentList.new # a graph structure under test
-    @g.add_edge(0, 1, 'a')
-    @g.add_edge(1, 2, 'b')
-    @g.add_edge(1, 3, 'c')
-    @g.add_edge(1, 6, 'b')
-    @g.add_edge(2, 4, 'd')
-    @g.add_edge(3, 5, 'a')
+    @g.add_edge(0, 'a', 1)
+    @g.add_edge(1, 'b', 2)
+    @g.add_edge(1, 'c', 3)
+    @g.add_edge(1, 'b', 6)
+    @g.add_edge(2, 'd', 4)
+    @g.add_edge(3, 'a', 5)
 
     @g.start = 0
     @g.end = 5
@@ -56,8 +56,8 @@ class AdjacentListTest < MiniTest::Test
 
   def test_append_another_graph_to_target
     @e = AdjacentList.new
-    @e.add_edge(0, 1, 'a')
-    @e.add_edge(1, 2, 'b')
+    @e.add_edge(0, 'a', 1)
+    @e.add_edge(1, 'b', 2)
 
     @g += @e
     assert_equal("[[{\"a\"=>1}], [{\"b\"=>2}, {\"c\"=>3}, {\"b\"=>6}], [{\"d\"=>4}], [{\"a\"=>5}], nil, nil, nil, [{\"a\"=>8}], [{\"b\"=>9}]]", @g.to_s)
@@ -65,8 +65,8 @@ class AdjacentListTest < MiniTest::Test
 
   def test_append_target_another_graph
     @e = AdjacentList.new
-    @e.add_edge(0, 1, 'a')
-    @e.add_edge(1, 2, 'b')
+    @e.add_edge(0, 'a', 1)
+    @e.add_edge(1, 'b', 2)
 
     @g = @e + @g
     assert_equal("[[{\"a\"=>1}], [{\"b\"=>2}], nil, [{\"a\"=>4}], [{\"b\"=>5}, {\"c\"=>6}, {\"b\"=>9}], [{\"d\"=>7}], [{\"a\"=>8}]]", @g.to_s)
