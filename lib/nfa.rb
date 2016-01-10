@@ -41,7 +41,16 @@ class NFA
   end
 
   def matches(string)
-    @end = 0
+    @found = false
+    (0..string.length).each do |i|
+      @end = i
+      @found = match_temp(string[i..string.length])
+      break if @found
+    end
+    @found
+  end
+
+  def match_temp(string)
     @old_states.push(@graph.start)
 
     string.each_char do |i|
@@ -53,6 +62,8 @@ class NFA
       @old_states = @new_states.clone
       @new_states.clear
 
+      return false if @old_states.empty?
+
       @old_states.each do |i|
         return true if @graph.final?(i)
       end
@@ -63,12 +74,13 @@ class NFA
 
   def matches_bt(string)
     @found = false
-    @end = -1
     (0..string.length).each do |i|
+      @end = i
       bt(@graph.start, string[i..string.length])
       break if @found
-      @end += 1
     end
+
+    @end -= 1
     @found
   end
 
@@ -141,7 +153,7 @@ class NFA
     if @graph.labels(state).include?(char)
       return @graph.neigbour(state, char)
     else
-      return [state]
+      return []
     end
   end
 

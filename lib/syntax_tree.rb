@@ -1,9 +1,18 @@
-# Represents a syntax tree
+# Author::     Oleg Kanatov  (mailto:okanatov@gmail.com)
+# Copyright::  Copyright (c) 2015, 2016
+# License::    Distributes under the same terms as Ruby
+
+# This class represents a syntax tree.
+
 class SyntaxTree
+
+  # Initializes the parser.
+  #
+  # @param string [StringIO] the stringio object that keeps the regular expression to be parsed.
   def initialize(string)
     @string = string
-    @lookahead = ' '
-    @lookahead = @string.getc while @lookahead =~ /[[:blank:]]/
+    @lookahead = ' ' # a character that is currently looked with the parser
+    @lookahead = @string.getc while @lookahead =~ /[[:blank:]]/ # to by pass all the blank characters
   end
 
   def expr
@@ -81,16 +90,36 @@ class SyntaxTree
   end
 end
 
-# Represents a node in the syntax tree
-class SyntaxTreeNode
-  attr_reader :data, :left, :right
+# Represents a node in the syntax tree.
 
+class SyntaxTreeNode
+
+  # @!attribute [r] data
+  #   @return [Object] data that is kept in the node.
+  attr_reader :data
+
+  # @!attribute [r] left
+  #   @return [SyntaxTreeNode] a reference to the left leaf of the syntax tree.
+  attr_reader :left
+
+  # @!attribute [r] right
+  #   @return [SyntaxTreeNode] a reference to the right leaf of the syntax tree.
+  attr_reader :right
+
+  # Initializes the node.
+  #
+  # @param data [Object] data that will be kept in the node.
+  # @param left [SyntaxTreeNode] a reference to the left leaf.
+  # @param right [SyntaxTreeNode] a reference to the right leaf.
   def initialize(data, left, right)
     @data = data
     @left = left
     @right = right
   end
 
+  # Creates a string representation of +:self+.
+  #
+  # @return [String] a string representation of +:self+.
   def to_s
     "Node: data=#{@data}, left=#{@left}, right=#{@right}"
   end

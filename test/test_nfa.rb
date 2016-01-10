@@ -35,7 +35,7 @@ class SimpleNFA < MiniTest::Test
     assert_equal(3, @nfa_simple.end)
   end
 
-  def test_simple_apply_dabc
+  def test_simple_apply_dbabc
     assert(@nfa_simple.matches('dbabc'), "NFA cannot match \"abc\"")
     assert_equal(4, @nfa_simple.end)
   end

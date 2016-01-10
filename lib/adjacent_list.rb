@@ -9,11 +9,11 @@
 class AdjacentList
 
   # @!attribute start
-  #   @return [Fixnum] a number of the start vertix.
+  #   @return [Fixnum] a number of the first vertix in the graph.
   attr_accessor :start
 
   # @!attribute end
-  #   @return [Fixnum] a number of the end vertix.
+  #   @return [Fixnum] a number of the last vertix in the graph.
   attr_accessor :end
 
   # Initializes an array of vertices.
@@ -60,8 +60,6 @@ class AdjacentList
   #
   # @param vertix [Fixnum] a vertix.
   # @return [Array] a list containing all the neigbours related to the vertix.
-  #
-  # @todo to check if vertix exists.
   def neigbours(vertix)
     if @vertices[vertix].nil?
       return []
@@ -75,8 +73,6 @@ class AdjacentList
   # @param vertix [Fixnum] a vertix.
   # @param label [Char] a label.
   # @return [Array] a list containing all the neigbours related to the vertix and the specific label.
-  #
-  # @todo to check if vertix exists.
   def neigbour(vertix, label)
     if @vertices[vertix].nil?
       return []
@@ -94,7 +90,6 @@ class AdjacentList
   # @return [AdjacentList] +:self+.
   #
   # @todo probably this method must be merged to the add_edge method.
-  # @todo to check if vertix exists.
   def set_neigbour(vertix, label, value)
     if @vertices[vertix].nil?
       return []
@@ -110,8 +105,6 @@ class AdjacentList
   #
   # @param vertix [Fixnum] a vertix.
   # @return [Array] a list containing all the labels related to the vertix.
-  #
-  # @todo to check if vertix exists.
   def labels(vertix)
     if @vertices[vertix].nil?
       return []
@@ -146,7 +139,7 @@ class AdjacentList
   #
   # @return [Array] a list containing labels to be visited from +:start+ to +:end+.
   def dfs
-    @path = [] # an array containing the list of labels found.
+    @path = [] # an array containing a list of the labels found.
     dfs_visit(@start)
     @path
   end
