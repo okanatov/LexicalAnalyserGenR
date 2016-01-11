@@ -40,47 +40,23 @@ class NFA
     @new_states = []
   end
 
-  def matches(string)
+  def matches?(string, method = :usual)
     @found = false
+    @end = 0
+
     (0..string.length).each do |i|
       @end = i
-      @found = match_temp(string[i..string.length])
-      break if @found
-    end
-    @found
-  end
-
-  def match_temp(string)
-    @old_states.push(@graph.start)
-
-    string.each_char do |i|
-      @old_states.each do |j|
-        s = move(j, i)
-        s.each { |e| add_state(e) unless @new_states.include?(e) }
+      if method == :usual
+        match_temp(string[i..string.length])
+      elsif method == :backtrack
+        bt(@graph.start, string[i..string.length], @end)
+        @end -= 1
+      else
+        return false
       end
-
-      @old_states = @new_states.clone
-      @new_states.clear
-
-      return false if @old_states.empty?
-
-      @old_states.each do |i|
-        return true if @graph.final?(i)
-      end
-      @end += 1
-    end
-    false
-  end
-
-  def matches_bt(string)
-    @found = false
-    (0..string.length).each do |i|
-      @end = i
-      bt(@graph.start, string[i..string.length])
       break if @found
     end
 
-    @end -= 1
     @found
   end
 
@@ -111,42 +87,65 @@ class NFA
     [start_idx, start_idx + 1]
   end
 
-  def bt(state, string)
-    return if reject(state, string)
-    if accept(state)
+  def match_temp(string)
+    add_state(@old_states, @graph.start)
+
+    string.each_char do |char|
+      @old_states.each do |state|
+        next_states = move(state, char)
+        next_states.each { |s| add_state(@new_states, s) unless @new_states.include?(s) }
+      end
+
+      break if @new_states.empty?
+
+      @new_states.each do |s|
+        if @graph.final?(s)
+          @found = true
+          return
+        end
+      end
+
+      @old_states = @new_states.clone
+      @new_states.clear
+
+      @end += 1
+    end
+  end
+
+  def bt(state, string, pos)
+    if @graph.final?(state)
       @found = true
+      @end = pos
       return
     end
 
-    s = first(state, string)
+    s = next_label(state, string)
+
+    return if s.empty?
+
     s.each do |i|
       arr = @graph.neigbour(state, i)
       arr.each do |e|
         if i == :empty
-          bt(e, string[0..string.length])
+          bt(e, string[0..string.length], pos)
         else
-          bt(e, string[1..string.length])
-          @end += 1
+          bt(e, string[1..string.length], pos.succ)
         end
+        return if @found
       end
-      break if @found
     end
   end
 
-  def reject(state, string)
-    if @graph.final?(state) || @graph.labels(state).include?(string[0..0]) || @graph.labels(state).include?(:empty)
-      return false
-    else
-      return true
-    end
-  end
-
-  def accept(state)
-    @graph.final?(state)
-  end
-
-  def first(state, string)
+  def next_label(state, string)
     @graph.labels(state).select { |i| (i == string[0..0]) || (i == :empty) }
+  end
+
+  def add_state(array, state)
+    array.push(state)
+
+    if @graph.labels(state).include? :empty
+      @graph.neigbour(state, :empty).each { |e| array.push(e) }
+    end
   end
 
   def move(state, char)
@@ -154,14 +153,6 @@ class NFA
       return @graph.neigbour(state, char)
     else
       return []
-    end
-  end
-
-  def add_state(state)
-    @new_states.push(state)
-
-    if @graph.labels(state).include? :empty
-      @graph.neigbour(state, :empty).each { |e| @new_states.push(e) }
     end
   end
 end
