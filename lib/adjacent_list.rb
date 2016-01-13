@@ -5,9 +5,7 @@
 # This class represents a graph as an adjacency list, i.e. a collection
 # of unordered lists, one for each vertix in the graph.
 # Each list describes the set of neighbors of its vertix.
-
 class AdjacentList
-
   # @!attribute start
   #   @return [Fixnum] a number of the first vertix in the graph.
   attr_accessor :start
@@ -26,16 +24,16 @@ class AdjacentList
 
   # Appends one graph to another.
   #
-  # @param another [AdjacentList] another graph to be appended to +:self+.
+  # @param other [AdjacentList] another graph to be appended to +:self+.
   # @return [AdjacentList] +:self+.
-  def +(another)
+  def +(other)
     start_idx = last + 1 # next free index in :self
-    another.vertices.each_index do |i|
-      next if another.vertices[i].nil?
-      another.vertices[i].select! do |e|
+    other.vertices.each_index do |i|
+      next if other.vertices[i].nil?
+      other.vertices[i].select! do |e|
         e.each_key { |k| e[k] = e[k] + start_idx }
       end
-      @vertices[start_idx + i] = another.vertices[i]
+      @vertices[start_idx + i] = other.vertices[i]
     end
     @vertices
   end
@@ -172,7 +170,6 @@ class AdjacentList
 
       break if @found
       @path.pop unless e == :empty
-
     end
   end
 end

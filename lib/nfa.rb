@@ -5,7 +5,6 @@ require_relative './adjacent_list'
 # Creates an NFA from a string passed in the constructor
 # and checks whether the NFA matches a given string.
 class NFA
-
   attr_reader :end
 
   def self.from_string(string)
@@ -40,19 +39,19 @@ class NFA
     @new_states = []
   end
 
-  def matches?(string, method = :usual)
+  def matches?(string, method = :breadth)
     @found = false
     @end = 0
 
     (0..string.length).each do |i|
       @end = i
-      if method == :usual
-        match_temp(string[i..string.length])
-      elsif method == :backtrack
-        bt(@graph.start, string[i..string.length], @end)
+      if method == :breadth
+        breadth_search(string[i..string.length])
+      elsif method == :depth
+        depth_search(@graph.start, string[i..string.length], @end)
         @end -= 1
       else
-        return false
+        break
       end
       break if @found
     end
@@ -67,10 +66,7 @@ class NFA
     finals.each do |e|
       @graph.end = e
       path = @graph.dfs
-
-      if path.length > max_path.length
-        max_path = path
-      end
+      max_path = path if path.length > max_path.length
     end
     max_path
   end
@@ -87,7 +83,7 @@ class NFA
     [start_idx, start_idx + 1]
   end
 
-  def match_temp(string)
+  def breadth_search(string)
     add_state(@old_states, @graph.start)
 
     string.each_char do |char|
@@ -98,12 +94,8 @@ class NFA
 
       break if @new_states.empty?
 
-      @new_states.each do |s|
-        if @graph.final?(s)
-          @found = true
-          return
-        end
-      end
+      @new_states.each { |s| @found = true if @graph.final?(s) }
+      break if @found
 
       @old_states = @new_states.clone
       @new_states.clear
@@ -112,38 +104,34 @@ class NFA
     end
   end
 
-  def bt(state, string, pos)
+  def depth_search(state, string, pos)
     if @graph.final?(state)
       @found = true
       @end = pos
-      return
-    end
-
-    s = next_label(state, string)
-
-    return if s.empty?
-
-    s.each do |i|
-      arr = @graph.neigbour(state, i)
-      arr.each do |e|
-        if i == :empty
-          bt(e, string[0..string.length], pos)
-        else
-          bt(e, string[1..string.length], pos.succ)
+    else
+      s = adjacent_labels(state, string) # TODO: re-implement via the move method
+      s.each do |i|
+        arr = @graph.neigbour(state, i)
+        arr.each do |e|
+          if i == :empty
+            depth_search(e, string[0..string.length], pos)
+          else
+            depth_search(e, string[1..string.length], pos.succ)
+          end
+          return if @found
         end
-        return if @found
       end
     end
   end
 
-  def next_label(state, string)
+  def adjacent_labels(state, string)
     @graph.labels(state).select { |i| (i == string[0..0]) || (i == :empty) }
   end
 
   def add_state(array, state)
     array.push(state)
 
-    if @graph.labels(state).include? :empty
+    if @graph.labels(state).include?(:empty)
       @graph.neigbour(state, :empty).each { |e| array.push(e) }
     end
   end

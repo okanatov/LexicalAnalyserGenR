@@ -1,7 +1,7 @@
 require 'simplecov'
-if ENV["COVERAGE"]
+if ENV['COVERATE']
   SimpleCov.start do
-    add_filter "test/"
+    add_filter 'test/'
   end
 end
 
@@ -21,7 +21,7 @@ class SimpleNFA < MiniTest::Test
   end
 
   def test_bt_simple_apply_abcdef
-    assert(@nfa_simple.matches?('abcdef', :backtrack), "NFA cannot match \"abc\"")
+    assert(@nfa_simple.matches?('abcdef', :depth), "NFA cannot match \"abc\"")
     assert_equal(2, @nfa_simple.end)
   end
 
@@ -31,7 +31,7 @@ class SimpleNFA < MiniTest::Test
   end
 
   def test_bt_simple_apply_dabcef
-    assert(@nfa_simple.matches?('dabcef', :backtrack), "NFA cannot match \"abc\"")
+    assert(@nfa_simple.matches?('dabcef', :depth), "NFA cannot match \"abc\"")
     assert_equal(3, @nfa_simple.end)
   end
 
@@ -41,7 +41,7 @@ class SimpleNFA < MiniTest::Test
   end
 
   def test_bt_simple_apply_dbabc
-    assert(@nfa_simple.matches?('dbabc', :backtrack), "NFA cannot match \"abc\"")
+    assert(@nfa_simple.matches?('dbabc', :depth), "NFA cannot match \"abc\"")
     assert_equal(4, @nfa_simple.end)
   end
 

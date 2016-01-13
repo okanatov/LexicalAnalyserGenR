@@ -1,7 +1,7 @@
 require 'simplecov'
-if ENV["COVERAGE"]
+if ENV['COVERATE']
   SimpleCov.start do
-    add_filter "test/"
+    add_filter 'test/'
   end
 end
 
