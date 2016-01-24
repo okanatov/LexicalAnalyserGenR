@@ -54,6 +54,17 @@ class AdjacentList
     end
   end
 
+  # Removes an edge.
+  #
+  # @param vertix [Fixnum] a vertix.
+  # @param label [Char] a label.
+  def remove_edge(vertix, label)
+    unless @vertices[vertix].nil?
+      @vertices[vertix].delete_if { |e| e.key?(label) }
+      @vertices[vertix] = nil if @vertices[vertix].empty?
+    end
+  end
+
   # Returns a list of all neigbours associated with the vertix.
   #
   # @param vertix [Fixnum] a vertix.

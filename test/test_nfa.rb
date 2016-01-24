@@ -1,5 +1,5 @@
 require 'simplecov'
-if ENV['COVERATE']
+if ENV['COVERAGE']
   SimpleCov.start do
     add_filter 'test/'
   end
@@ -18,9 +18,7 @@ class SimpleNFA < MiniTest::Test
   def test_simple_apply_abcdef
     assert(@nfa_simple.matches?('abcdef'), "NFA cannot match \"abc\"")
     assert_equal(2, @nfa_simple.end)
-  end
 
-  def test_bt_simple_apply_abcdef
     assert(@nfa_simple.matches?('abcdef', :depth), "NFA cannot match \"abc\"")
     assert_equal(2, @nfa_simple.end)
   end
@@ -28,9 +26,7 @@ class SimpleNFA < MiniTest::Test
   def test_simple_apply_dabcef
     assert(@nfa_simple.matches?('dabcef'), "NFA cannot match \"abc\"")
     assert_equal(3, @nfa_simple.end)
-  end
 
-  def test_bt_simple_apply_dabcef
     assert(@nfa_simple.matches?('dabcef', :depth), "NFA cannot match \"abc\"")
     assert_equal(3, @nfa_simple.end)
   end
@@ -38,11 +34,53 @@ class SimpleNFA < MiniTest::Test
   def test_simple_apply_dbabc
     assert(@nfa_simple.matches?('dbabc'), "NFA cannot match \"abc\"")
     assert_equal(4, @nfa_simple.end)
-  end
 
-  def test_bt_simple_apply_dbabc
     assert(@nfa_simple.matches?('dbabc', :depth), "NFA cannot match \"abc\"")
     assert_equal(4, @nfa_simple.end)
+  end
+
+  def test_simple_apply_alternation_abd
+    @nfa_alternation = NFA.from_string('a(b|c)d')
+    assert(nil != @nfa_alternation)
+
+    assert(@nfa_alternation.matches?('abd'), "NFA cannot match \"abd\"")
+    assert_equal(2, @nfa_alternation.end)
+
+    assert(@nfa_alternation.matches?('abd', :depth), "NFA cannot match \"abd\"")
+    assert_equal(2, @nfa_alternation.end)
+  end
+
+  def test_simple_apply_alternation_acd
+    @nfa_alternation = NFA.from_string('a(b|c)d')
+    assert(nil != @nfa_alternation)
+
+    assert(@nfa_alternation.matches?('acd'), "NFA cannot match \"acd\"")
+    assert_equal(2, @nfa_alternation.end)
+
+    assert(@nfa_alternation.matches?('acd', :depth), "NFA cannot match \"acd\"")
+    assert_equal(2, @nfa_alternation.end)
+  end
+
+  def test_simple_apply_alternation_ab
+    @nfa_alternation = NFA.from_string('ab|cd')
+    assert(nil != @nfa_alternation)
+
+    assert(@nfa_alternation.matches?('ab'), "NFA cannot match \"ab\"")
+    assert_equal(1, @nfa_alternation.end)
+
+    assert(@nfa_alternation.matches?('ab', :depth), "NFA cannot match \"ab\"")
+    assert_equal(1, @nfa_alternation.end)
+  end
+
+  def test_simple_apply_alternation_cd
+    @nfa_alternation = NFA.from_string('ab|cd')
+    assert(nil != @nfa_alternation)
+
+    assert(@nfa_alternation.matches?('cd'), "NFA cannot match \"cd\"")
+    assert_equal(1, @nfa_alternation.end)
+
+    assert(@nfa_alternation.matches?('cd', :depth), "NFA cannot match \"cd\"")
+    assert_equal(1, @nfa_alternation.end)
   end
 
   def test_max_path

@@ -13,30 +13,14 @@ class NFA
 
     node = tree.expr
 
-    from_syntax_tree(node, graph)
-    graph.start = 0
+    graph_begin, _graph_end = from_syntax_tree(node, graph)
+    graph.start = graph_begin
 
     new(graph)
   end
 
-  def self.from_syntax_tree(node, graph)
-    if node.left.nil? && node.right.nil?
-      return create_single_expression_from(node.data, graph)
-    end
-
-    left = from_syntax_tree(node.left, graph)
-    right = from_syntax_tree(node.right, graph)
-
-    if node.data == '.'
-      graph.add_edge(left[1], :empty, right[0])
-      return [left[0], right[1]]
-    end
-  end
-
   def initialize(graph)
     @graph = graph
-    @old_states = []
-    @new_states = []
   end
 
   def matches?(string, method = :breadth)
@@ -77,6 +61,44 @@ class NFA
 
   private
 
+  def self.from_syntax_tree(node, graph)
+    if node.left.nil? && node.right.nil?
+      return create_single_expression_from(node.data, graph)
+    end
+
+    if node.data == '.'
+      left = from_syntax_tree(node.left, graph)
+      right = from_syntax_tree(node.right, graph)
+
+      labels = graph.labels(right[0])
+      labels.each do |e|
+        neigbours = graph.neigbour(right[0], e)
+        neigbours.each do |i|
+          graph.add_edge(left[1], e, i)
+        end
+        graph.remove_edge(right[0], e)
+      end
+      return [left[0], right[1]]
+    elsif node.data == '|'
+      start_idx = graph.last + 1
+      graph.add_edge(start_idx, :empty, start_idx) # fake
+
+      left = from_syntax_tree(node.left, graph)
+      right = from_syntax_tree(node.right, graph)
+
+      graph.remove_edge(start_idx, :empty) # fake
+
+      last_idx = graph.last + 1
+
+      graph.add_edge(start_idx, :empty, left[0])
+      graph.add_edge(start_idx, :empty, right[0])
+      graph.add_edge(left[1], :empty, last_idx)
+      graph.add_edge(right[1], :empty, last_idx)
+      return [start_idx, last_idx]
+    end
+    [nil, nil]
+  end
+
   def self.create_single_expression_from(char, graph)
     start_idx = graph.last + 1
     graph.add_edge(start_idx, char, start_idx + 1)
@@ -84,6 +106,9 @@ class NFA
   end
 
   def breadth_search(string)
+    @old_states = []
+    @new_states = []
+
     add_state(@old_states, @graph.start)
 
     string.each_char do |char|
