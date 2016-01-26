@@ -1,6 +1,8 @@
 require 'stringio'
-require_relative './syntax_tree'
+require_relative './regexp_parser'
 require_relative './adjacent_list'
+
+include SyntaxTree
 
 # Creates an NFA from a string passed in the constructor
 # and checks whether the NFA matches a given string.
@@ -8,7 +10,7 @@ class NFA
   attr_reader :end
 
   def self.from_string(string)
-    tree = SyntaxTree.new(StringIO.new(string))
+    tree = RegexpParser.new(StringIO.new(string))
     graph = AdjacentList.new
 
     node = tree.expr
@@ -67,34 +69,9 @@ class NFA
     end
 
     if node.data == '.'
-      left = from_syntax_tree(node.left, graph)
-      right = from_syntax_tree(node.right, graph)
-
-      labels = graph.labels(right[0])
-      labels.each do |e|
-        neigbours = graph.neigbour(right[0], e)
-        neigbours.each do |i|
-          graph.add_edge(left[1], e, i)
-        end
-        graph.remove_edge(right[0], e)
-      end
-      return [left[0], right[1]]
+      return create_concat_expression(node, graph)
     elsif node.data == '|'
-      start_idx = graph.last + 1
-      graph.add_edge(start_idx, :empty, start_idx) # fake
-
-      left = from_syntax_tree(node.left, graph)
-      right = from_syntax_tree(node.right, graph)
-
-      graph.remove_edge(start_idx, :empty) # fake
-
-      last_idx = graph.last + 1
-
-      graph.add_edge(start_idx, :empty, left[0])
-      graph.add_edge(start_idx, :empty, right[0])
-      graph.add_edge(left[1], :empty, last_idx)
-      graph.add_edge(right[1], :empty, last_idx)
-      return [start_idx, last_idx]
+      return create_alternate_expression(node, graph)
     end
     [nil, nil]
   end
@@ -103,6 +80,49 @@ class NFA
     start_idx = graph.last + 1
     graph.add_edge(start_idx, char, start_idx + 1)
     [start_idx, start_idx + 1]
+  end
+
+  def self.create_concat_expression(node, graph)
+    left, right = create_childs(node, graph)
+
+    labels = graph.labels(right[0])
+    labels.each do |e|
+      neigbours = graph.neigbour(right[0], e)
+      neigbours.each do |i|
+        graph.add_edge(left[1], e, i)
+      end
+      graph.remove_edge(right[0], e)
+    end
+    [left[0], right[1]]
+  end
+
+  def self.create_childs(node, graph)
+    left = from_syntax_tree(node.left, graph)
+    right = from_syntax_tree(node.right, graph)
+    [left, right]
+  end
+
+  def self.create_alternate_expression(node, graph)
+    reserved = reserve_vertix(graph)
+    left, right = create_childs(node, graph)
+    unreserve_vertex(graph, reserved)
+
+    last_idx = graph.last + 1
+    graph.add_edge(reserved, :empty, left[0])
+    graph.add_edge(reserved, :empty, right[0])
+    graph.add_edge(left[1], :empty, last_idx)
+    graph.add_edge(right[1], :empty, last_idx)
+    [reserved, last_idx]
+  end
+
+  def self.reserve_vertix(graph)
+    start_idx = graph.last + 1
+    graph.add_edge(start_idx, :empty, start_idx)
+    start_idx
+  end
+
+  def self.unreserve_vertex(graph, vertex)
+    graph.remove_edge(vertex, :empty)
   end
 
   def breadth_search(string)
@@ -143,7 +163,7 @@ class NFA
           else
             depth_search(e, string[1..string.length], pos.succ)
           end
-          return if @found
+          return true if @found
         end
       end
     end
