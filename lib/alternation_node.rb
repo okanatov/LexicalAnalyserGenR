@@ -2,13 +2,11 @@
 # Copyright::  Copyright (c) 2015, 2016
 # License::    Distributes under the same terms as Ruby
 
+require_relative './adjacent_list'
+
 module SyntaxTree
   # Represents a node in the syntax tree.
-  class Node
-    # @!attribute [r] data
-    #   @return [Object] data that is kept in the node.
-    attr_reader :data
-
+  class AlternationNode
     # @!attribute [r] left
     #   @return [SyntaxTreeNode] a reference to the left leaf of the syntax tree.
     attr_reader :left
@@ -22,23 +20,42 @@ module SyntaxTree
     # @param data [Object] data that will be kept in the node.
     # @param left [SyntaxTreeNode] a reference to the left leaf.
     # @param right [SyntaxTreeNode] a reference to the right leaf.
-    def initialize(data, left, right)
-      @data = data
+    def initialize(left, right)
       @left = left
       @right = right
     end
 
     def interpret(graph)
+      reserved = reserve_vertix(graph)
+
+      left_interpreted = left.interpret(graph)
+      right_interpreted = right.interpret(graph)
+
+      unreserve_vertex(graph, reserved)
+
+      last_idx = graph.last + 1
+      graph.add_edge(reserved, :empty, left_interpreted[0])
+      graph.add_edge(reserved, :empty, right_interpreted[0])
+      graph.add_edge(left_interpreted[1], :empty, last_idx)
+      graph.add_edge(right_interpreted[1], :empty, last_idx)
+      [reserved, last_idx]
+    end
+
+    def reserve_vertix(graph)
       start_idx = graph.last + 1
-      graph.add_edge(start_idx, @data, start_idx + 1)
-      [start_idx, start_idx + 1]
+      graph.add_edge(start_idx, :empty, start_idx)
+      start_idx
+    end
+
+    def unreserve_vertex(graph, vertex)
+      graph.remove_edge(vertex, :empty)
     end
 
     # Creates a string representation of +:self+.
     #
     # @return [String] a string representation of +:self+.
     def to_s
-      "Node: data=#{@data}, left=#{@left}, right=#{@right}"
+      "Alternation: left=#{@left}, right=#{@right}"
     end
   end
 end

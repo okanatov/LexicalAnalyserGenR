@@ -3,6 +3,9 @@
 # License::    Distributes under the same terms as Ruby
 
 require_relative './syntax_tree_node'
+require_relative './concatenation_node'
+require_relative './alternation_node'
+require_relative './star_node'
 
 module SyntaxTree
   # Represents a parser that can build a syntax tree representation from a regular expression string.
@@ -73,21 +76,21 @@ module SyntaxTree
     end
 
     def alternate(left, right)
-      Node.new('|', left, right)
+      AlternationNode.new(left, right)
     end
 
     def star(node)
       if !node.right.nil?
         temp = node.right
-        right = Node.new('*', temp, '*')
+        right = StarNode.new(temp)
         concat(node.left, right)
       else
-        Node.new('*', node, '*')
+        StarNode.new(node)
       end
     end
 
     def concat(left, right)
-      Node.new('.', left, right)
+      ConcatenationNode.new(left, right)
     end
   end
 end

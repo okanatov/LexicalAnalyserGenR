@@ -1,6 +1,8 @@
 require 'stringio'
 require_relative './regexp_parser'
 require_relative './adjacent_list'
+require_relative './concatenation_node'
+require_relative './alternation_node'
 
 include SyntaxTree
 
@@ -14,8 +16,7 @@ class NFA
     graph = AdjacentList.new
 
     node = tree.expr
-
-    graph_begin, _graph_end = from_syntax_tree(node, graph)
+    graph_begin, _graph_end = node.interpret(graph)
     graph.start = graph_begin
 
     new(graph)
@@ -62,68 +63,6 @@ class NFA
   end
 
   private
-
-  def self.from_syntax_tree(node, graph)
-    if node.left.nil? && node.right.nil?
-      return create_single_expression_from(node.data, graph)
-    end
-
-    if node.data == '.'
-      return create_concat_expression(node, graph)
-    elsif node.data == '|'
-      return create_alternate_expression(node, graph)
-    end
-    [nil, nil]
-  end
-
-  def self.create_single_expression_from(char, graph)
-    start_idx = graph.last + 1
-    graph.add_edge(start_idx, char, start_idx + 1)
-    [start_idx, start_idx + 1]
-  end
-
-  def self.create_concat_expression(node, graph)
-    left, right = create_childs(node, graph)
-
-    labels = graph.labels(right[0])
-    labels.each do |e|
-      neigbours = graph.neigbour(right[0], e)
-      neigbours.each do |i|
-        graph.add_edge(left[1], e, i)
-      end
-      graph.remove_edge(right[0], e)
-    end
-    [left[0], right[1]]
-  end
-
-  def self.create_childs(node, graph)
-    left = from_syntax_tree(node.left, graph)
-    right = from_syntax_tree(node.right, graph)
-    [left, right]
-  end
-
-  def self.create_alternate_expression(node, graph)
-    reserved = reserve_vertix(graph)
-    left, right = create_childs(node, graph)
-    unreserve_vertex(graph, reserved)
-
-    last_idx = graph.last + 1
-    graph.add_edge(reserved, :empty, left[0])
-    graph.add_edge(reserved, :empty, right[0])
-    graph.add_edge(left[1], :empty, last_idx)
-    graph.add_edge(right[1], :empty, last_idx)
-    [reserved, last_idx]
-  end
-
-  def self.reserve_vertix(graph)
-    start_idx = graph.last + 1
-    graph.add_edge(start_idx, :empty, start_idx)
-    start_idx
-  end
-
-  def self.unreserve_vertex(graph, vertex)
-    graph.remove_edge(vertex, :empty)
-  end
 
   def breadth_search(string)
     @old_states = []
