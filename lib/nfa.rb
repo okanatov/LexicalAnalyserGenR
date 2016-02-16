@@ -12,10 +12,10 @@ class NFA
   attr_reader :end
 
   def self.from_string(string)
-    tree = RegexpParser.new(StringIO.new(string))
-    graph = AdjacentList.new
+    parser = RegexpParser.new(StringIO.new(string))
+    node = parser.expr
 
-    node = tree.expr
+    graph = AdjacentList.new
     graph_begin, _graph_end = node.interpret(graph)
     graph.start = graph_begin
 
@@ -104,23 +104,16 @@ class NFA
       @found = true
       @end = pos
     else
-      s = adjacent_labels(state, string) # TODO: re-implement via the move method
-      s.each do |i|
-        arr = @graph.neigbour(state, i)
-        arr.each do |e|
-          if i == :empty
-            depth_search(e, string[0..string.length], pos)
-          else
-            depth_search(e, string[1..string.length], pos.succ)
-          end
-          return true if @found
+      edges = @graph.edges(state)
+      edges.each do |edge|
+        if edge.key?(string[0])
+          depth_search(edge[string[0]], string[1..string.length], pos.succ)
+        elsif edge.key?(:empty)
+          depth_search(edge[:empty], string, pos)
         end
+        break true if @found
       end
     end
-  end
-
-  def adjacent_labels(state, string)
-    @graph.labels(state).select { |i| (i == string[0..0]) || (i == :empty) }
   end
 
   def add_state(array, state)

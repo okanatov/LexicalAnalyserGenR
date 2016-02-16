@@ -65,16 +65,24 @@ class AdjacentList
     end
   end
 
+  # Returns a list of all edges associated with the vertix.
+  #
+  # @param vertix [Fixnum] a vertix.
+  # @return [Array] a list containing all the vertix edges.
+  def edges(vertix)
+    if @vertices[vertix].nil?
+      return []
+    else
+      @vertices[vertix]
+    end
+  end
+
   # Returns a list of all neigbours associated with the vertix.
   #
   # @param vertix [Fixnum] a vertix.
   # @return [Array] a list containing all the neigbours related to the vertix.
   def neigbours(vertix)
-    if @vertices[vertix].nil?
-      return []
-    else
-      @vertices[vertix].collect { |e| e.values.first }
-    end
+    edges(vertix).collect { |edge| edge.values.first }
   end
 
   # Returns a list of neigbours associated with the vertix and the specific label.
@@ -83,12 +91,8 @@ class AdjacentList
   # @param label [Char] a label.
   # @return [Array] a list containing all the neigbours related to the vertix and the specific label.
   def neigbour(vertix, label)
-    if @vertices[vertix].nil?
-      return []
-    else
-      neigbours = @vertices[vertix].select { |e| e.key?(label) }
-      neigbours.collect { |e| e.values.first }
-    end
+    neigbours = edges(vertix).select { |edge| edge.key?(label) }
+    neigbours.collect { |e| e.values.first }
   end
 
   # Sets a value to all neigbours vertices associated with the vertix and the label.
@@ -100,14 +104,7 @@ class AdjacentList
   #
   # @todo probably this method must be merged to the add_edge method.
   def set_neigbour(vertix, label, value)
-    if @vertices[vertix].nil?
-      return []
-    else
-      @vertices[vertix].collect! do |e|
-        e[label] = value if e.key?(label)
-        e
-      end
-    end
+    edges(vertix).collect! { |edge| edge[label] = value if edge.key?(label); edge }
   end
 
   # Returns a list of all labels associated with the vertix.
@@ -115,11 +112,7 @@ class AdjacentList
   # @param vertix [Fixnum] a vertix.
   # @return [Array] a list containing all the labels related to the vertix.
   def labels(vertix)
-    if @vertices[vertix].nil?
-      return []
-    else
-      @vertices[vertix].collect { |e| e.keys.first }
-    end
+    edges(vertix).collect { |edge| edge.keys.first }
   end
 
   # Returns the latest vertix in the graph.
