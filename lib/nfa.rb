@@ -33,7 +33,8 @@ class NFA
     (0..string.length).each do |i|
       @end = i
       if method == :breadth
-        breadth_search(string[i..string.length])
+        io = StringIO.new(string[i..string.length])
+        breadth_search(io)
       elsif method == :depth
         depth_search(@graph.start, string[i..string.length], @end)
         @end -= 1
@@ -64,13 +65,14 @@ class NFA
 
   private
 
-  def breadth_search(string)
+  def breadth_search(stringio)
     @old_states = []
     @new_states = []
 
     add_state(@old_states, @graph.start)
 
-    string.each_char do |char|
+    until stringio.eof?
+      char = stringio.getc
       @old_states.each do |state|
         next_states = move(state, char)
         next_states.each { |s| add_state(@new_states, s) unless @new_states.include?(s) }
