@@ -68,8 +68,10 @@ class NFA
   def breadth_search(stringio)
     @old_states = []
     @new_states = []
+    @states = []
 
     add_state(@old_states, @graph.start)
+    @states << @old_states.clone
 
     until stringio.eof?
       char = stringio.getc
@@ -80,10 +82,12 @@ class NFA
 
       break if @new_states.empty?
 
+      @states << @new_states.clone
+
       @new_states.each { |s| @found = true if @graph.final?(s) }
       break if @found
 
-      @old_states = @new_states.clone
+      @old_states, @new_states = @new_states, @old_states
       @new_states.clear
 
       @end += 1
