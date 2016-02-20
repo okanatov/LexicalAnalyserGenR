@@ -69,9 +69,11 @@ class NFA
     @old_states = []
     @new_states = []
     @states = []
+    @chars = []
 
     add_state(@old_states, @graph.start)
     @states << @old_states.clone
+    @chars << ''
 
     until stringio.eof?
       char = stringio.getc
@@ -81,17 +83,20 @@ class NFA
       end
 
       break if @new_states.empty?
-
       @states << @new_states.clone
-
-      @new_states.each { |s| @found = true if @graph.final?(s) }
-      break if @found
+      @chars << char
 
       @old_states, @new_states = @new_states, @old_states
       @new_states.clear
-
-      @end += 1
     end
+
+    @states.reverse_each do |e|
+      e.each { |s| @found = true if @graph.final?(s) }
+      break if @found
+      @chars.pop
+    end
+
+    @end += (@chars.size - 2)
   end
 
   def depth_search(state, string, pos)
