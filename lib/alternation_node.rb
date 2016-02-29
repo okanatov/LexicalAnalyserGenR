@@ -2,11 +2,14 @@
 # Copyright::  Copyright (c) 2015, 2016
 # License::    Distributes under the same terms as Ruby
 
-require_relative './adjacent_list'
+require_relative './directed_graph'
 
 module SyntaxTree
   # Represents a node in the syntax tree.
   class AlternationNode
+
+    include Graph
+
     # @!attribute [r] left
     #   @return [SyntaxTreeNode] a reference to the left leaf of the syntax tree.
     attr_reader :left
@@ -25,30 +28,8 @@ module SyntaxTree
       @right = right
     end
 
-    def interpret(graph)
-      reserved = reserve_vertix(graph)
-
-      left_interpreted = left.interpret(graph)
-      right_interpreted = right.interpret(graph)
-
-      unreserve_vertex(graph, reserved)
-
-      last_idx = graph.last + 1
-      graph.add_edge(reserved, :empty, left_interpreted[0])
-      graph.add_edge(reserved, :empty, right_interpreted[0])
-      graph.add_edge(left_interpreted[1], :empty, last_idx)
-      graph.add_edge(right_interpreted[1], :empty, last_idx)
-      [reserved, last_idx]
-    end
-
-    def reserve_vertix(graph)
-      start_idx = graph.last + 1
-      graph.add_edge(start_idx, :empty, start_idx)
-      start_idx
-    end
-
-    def unreserve_vertex(graph, vertex)
-      graph.remove_edge(vertex, :empty)
+    def build
+      DirectedGraph.alternation(@left.build, @right.build)
     end
 
     # Creates a string representation of +:self+.

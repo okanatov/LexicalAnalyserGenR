@@ -2,11 +2,14 @@
 # Copyright::  Copyright (c) 2015, 2016
 # License::    Distributes under the same terms as Ruby
 
-require_relative './adjacent_list'
+require_relative './directed_graph'
 
 module SyntaxTree
   # Represents a node in the syntax tree.
   class ConcatenationNode
+
+    include Graph
+
     # @!attribute [r] left
     #   @return [SyntaxTreeNode] a reference to the left leaf of the syntax tree.
     attr_reader :left
@@ -25,19 +28,8 @@ module SyntaxTree
       @right = right
     end
 
-    def interpret(graph)
-      left_interpreted = left.interpret(graph)
-      right_interpreted = right.interpret(graph)
-
-      labels = graph.labels(right_interpreted[0])
-      labels.each do |e|
-        neigbours = graph.neigbour(right_interpreted[0], e)
-        neigbours.each do |i|
-          graph.add_edge(left_interpreted[1], e, i)
-        end
-        graph.remove_edge(right_interpreted[0], e)
-      end
-      [left_interpreted[0], right_interpreted[1]]
+    def build
+      DirectedGraph.concatenation(@left.build, @right.build)
     end
 
     # Creates a string representation of +:self+.

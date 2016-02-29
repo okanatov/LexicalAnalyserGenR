@@ -17,6 +17,16 @@ module Graph
       @vertices = []
     end
 
+    # Creates a graph consting of two vertex and the edge between them. The edge is associated
+    # with the label.
+    #
+    # @param character [Char] the edge label.
+    def self.single_node(character)
+      graph = DirectedGraph.new
+      graph.add_edge(0, 1, character)
+      graph
+    end
+
     # Adds one graph after another and returns a new graph containing both graphs.
     #
     # @param first [DirectedGraph] a first graph.
