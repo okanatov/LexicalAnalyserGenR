@@ -75,14 +75,11 @@ class Parser
           @state = :finish
         end
       when :finish
-        if !number.end?(char)
-          fail 'spare characters'
-        elsif !char.nil?
-          @string_io.ungetc(char)
-        end
+        raise 'spare characters' unless number.end?(char)
+        @string_io.ungetc(char) unless char.nil?
         break
       else
-        fail 'not reachable statement'
+        raise 'not reachable statement'
       end
     end
     result
