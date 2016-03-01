@@ -1,0 +1,6 @@
+#!/home/oleg/.rvm/rubies/ruby-2.2.1/bin/ruby
+
+require 'parser'
+
+runner = RomanNumbers::Parser.new(ARGV.shift.dup)
+puts runner.parse

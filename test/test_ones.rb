@@ -6,10 +6,13 @@ if ENV['COVERAGE']
 end
 
 require 'minitest/autorun'
-require_relative '../lib/ones'
+require_relative '../lib/parser/ones'
 
 # Verifies Romans one numbers
 class OnesTest < MiniTest::Test
+
+  include RomanNumbers
+
   def setup
     @ones = Ones.new
   end
