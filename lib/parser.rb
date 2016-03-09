@@ -3,16 +3,14 @@ require_relative './parser/ones'
 require_relative './parser/tens'
 
 module RomanNumbers
-  # Represent a hard-code parser of Romans numbers
+  # Represents a hard-code parser of Romans numbers
   class Parser
     attr_reader :state
 
-    def initialize(string_to_parse)
+    def parse(string_to_parse)
       @string_io = StringIO.new(string_to_parse)
-      @state = :start
-    end
 
-    def parse
+      @state = :start
       tens = step(Tens.new)
       @state = :start
       ones = step(Ones.new)
@@ -24,10 +22,11 @@ module RomanNumbers
 
     def step(number)
       result = 0
-      char = @string_io.getc
+      char = ''
       loop do
         case @state
         when :start
+          char = @string_io.getc
           if char == number.one
             result += 1
             @state = :nextAfterI

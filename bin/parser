@@ -2,5 +2,5 @@
 
 require 'parser'
 
-runner = RomanNumbers::Parser.new(ARGV.shift.dup)
-puts runner.parse
+runner = RomanNumbers::Parser.new
+puts runner.parse(ARGV.shift.dup)
