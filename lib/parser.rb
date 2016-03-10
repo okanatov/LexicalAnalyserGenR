@@ -2,7 +2,6 @@ require 'stringio'
 require_relative './parser/ones'
 require_relative './parser/tens'
 require_relative './parser/start'
-require_relative './parser/nextafteri'
 require_relative './parser/finish'
 
 module RomanNumbers
@@ -14,11 +13,9 @@ module RomanNumbers
       @string_io = StringIO.new(string_to_parse)
 
       @state = Start.new
-      @result = 0
       tens = go_next(Tens.new)
 
       @state = Start.new
-      @result = 0
       ones = go_next(Ones.new)
 
       10 * tens + ones
@@ -27,11 +24,16 @@ module RomanNumbers
     private
 
     def go_next(number)
+      result = 0
       loop do
-        @result += @state.go_next(self, number, @string_io, @result)
-        break if @state.instance_of?(Finish)
+        begin
+          result += @state.go_next(self, number, @string_io)
+        rescue
+          raise 'spare characters'
+        end
+        break if @state.instance_of?(Start)
       end
-      @result
+      result
     end
   end
 end

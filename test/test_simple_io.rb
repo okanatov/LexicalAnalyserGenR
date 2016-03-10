@@ -16,25 +16,25 @@ class SimpleIO < MiniTest::Test
   def test_simple_empty
     parser = Parser.new
     assert_equal(0, parser.parse(''))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_I
     parser = Parser.new
     assert_equal(1, parser.parse('I'))
-    assert(parser.state.instance_of?(Finish))
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_II
     parser = Parser.new
     assert_equal(2, parser.parse('II'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_III
     parser = Parser.new
     assert_equal(3, parser.parse('III'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_IIII
@@ -43,13 +43,13 @@ class SimpleIO < MiniTest::Test
       parser.parse('IIII')
     end
     assert_equal('spare characters', err.message)
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Finish))
   end
 
   def test_simple_IV
     parser = Parser.new
     assert_equal(4, parser.parse('IV'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_IVI
@@ -58,13 +58,13 @@ class SimpleIO < MiniTest::Test
       parser.parse('IVI')
     end
     assert_equal('spare characters', err.message)
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Finish))
   end
 
   def test_simple_V
     parser = Parser.new
     assert_equal(5, parser.parse('V'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_VIV
@@ -73,19 +73,19 @@ class SimpleIO < MiniTest::Test
       parser.parse('VIV')
     end
     assert_equal('spare characters', err.message)
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Finish))
   end
 
   def test_simple_VII
     parser = Parser.new
     assert_equal(7, parser.parse('VII'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_VIII
     parser = Parser.new
     assert_equal(8, parser.parse('VIII'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_VIIII
@@ -94,7 +94,7 @@ class SimpleIO < MiniTest::Test
       parser.parse('VIIII')
     end
     assert_equal('spare characters', err.message)
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Finish))
   end
 
   def test_simple_G
@@ -103,78 +103,78 @@ class SimpleIO < MiniTest::Test
       parser.parse('G')
     end
     assert_equal('spare characters', err.message)
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Finish))
   end
 
   def test_simple_IX
     parser = Parser.new
     assert_equal(9, parser.parse('IX'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_X
     parser = Parser.new
     assert_equal(10, parser.parse('X'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_XI
     parser = Parser.new
     assert_equal(11, parser.parse('XI'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_XII
     parser = Parser.new
     assert_equal(12, parser.parse('XII'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_XIII
     parser = Parser.new
     assert_equal(13, parser.parse('XIII'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_XIV
     parser = Parser.new
     assert_equal(14, parser.parse('XIV'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_XV
     parser = Parser.new
     assert_equal(15, parser.parse('XV'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_XVI
     parser = Parser.new
     assert_equal(16, parser.parse('XVI'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_XVII
     parser = Parser.new
     assert_equal(17, parser.parse('XVII'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_XVIII
     parser = Parser.new
     assert_equal(18, parser.parse('XVIII'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_XIX
     parser = Parser.new
     assert_equal(19, parser.parse('XIX'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 
   def test_simple_XX
     parser = Parser.new
     assert_equal(20, parser.parse('XX'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Start))
   end
 end
