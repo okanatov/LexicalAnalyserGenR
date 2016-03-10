@@ -1,89 +1,37 @@
 require 'stringio'
 require_relative './parser/ones'
 require_relative './parser/tens'
+require_relative './parser/start'
+require_relative './parser/nextafteri'
+require_relative './parser/finish'
 
 module RomanNumbers
   # Represents a hard-code parser of Romans numbers
   class Parser
-    attr_reader :state
+    attr_accessor :state
 
     def parse(string_to_parse)
       @string_io = StringIO.new(string_to_parse)
 
-      @state = :start
-      tens = step(Tens.new)
-      @state = :start
-      ones = step(Ones.new)
+      @state = Start.new
+      @result = 0
+      tens = go_next(Tens.new)
+
+      @state = Start.new
+      @result = 0
+      ones = go_next(Ones.new)
 
       10 * tens + ones
     end
 
     private
 
-    def step(number)
-      result = 0
-      char = ''
+    def go_next(number)
       loop do
-        case @state
-        when :start
-          char = @string_io.getc
-          if char == number.one
-            result += 1
-            @state = :nextAfterI
-          elsif char == number.five
-            result += 5
-            @state = :nextAfterV
-          else
-            @state = :finish
-          end
-        when :nextAfterI
-          char = @string_io.getc
-          if char == number.one
-            result += 1
-            @state = :nextAfterDoubleI
-          elsif char == number.five
-            result += 3
-            char = @string_io.getc
-            @state = :finish
-          elsif char == number.ten
-            result += 8
-            char = @string_io.getc
-            @state = :finish
-          else
-            @state = :finish
-          end
-        when :nextAfterDoubleI
-          char = @string_io.getc
-          if char == number.one
-            result += 1
-            char = @string_io.getc
-          end
-          @state = :finish
-        when :nextAfterV
-          char = @string_io.getc
-          if char == number.one
-            result += 1
-            @state = :nextAfterVI
-          else
-            @state = :finish
-          end
-        when :nextAfterVI
-          char = @string_io.getc
-          if char == number.one
-            result += 1
-            @state = :nextAfterDoubleI
-          else
-            @state = :finish
-          end
-        when :finish
-          raise 'spare characters' unless number.end?(char)
-          @string_io.ungetc(char) unless char.nil?
-          break
-        else
-          raise 'not reachable statement'
-        end
+        @result += @state.go_next(self, number, @string_io, @result)
+        break if @state.instance_of?(Finish)
       end
-      result
+      @result
     end
   end
 end

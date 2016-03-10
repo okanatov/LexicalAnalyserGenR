@@ -22,7 +22,7 @@ class SimpleIO < MiniTest::Test
   def test_simple_I
     parser = Parser.new
     assert_equal(1, parser.parse('I'))
-    assert_equal(:finish, parser.state)
+    assert(parser.state.instance_of?(Finish))
   end
 
   def test_simple_II
