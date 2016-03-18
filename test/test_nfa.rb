@@ -83,10 +83,6 @@ class SimpleNFA < MiniTest::Test
     assert_equal(1, @nfa_alternation.end)
   end
 
-  def test_max_path
-    assert_equal(%w(a b c), @nfa_simple.max_path)
-  end
-
   def test_longest
     @nfa_alternation = NFA.from_string('long|longest')
     assert(nil != @nfa_alternation)

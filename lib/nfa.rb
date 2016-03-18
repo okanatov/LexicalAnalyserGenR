@@ -1,10 +1,11 @@
 require 'stringio'
 require_relative './regexp_parser'
-require_relative './adjacent_list'
+require_relative './directed_graph'
 require_relative './concatenation_node'
 require_relative './alternation_node'
 
 include SyntaxTree
+include Graph
 
 # Creates an NFA from a string passed in the constructor
 # and checks whether the NFA matches a given string.
@@ -14,12 +15,7 @@ class NFA
   def self.from_string(string)
     parser = RegexpParser.new(StringIO.new(string))
     node = parser.expr
-
-    graph = AdjacentList.new
-    graph_begin, _graph_end = node.interpret(graph)
-    graph.start = graph_begin
-
-    new(graph)
+    new(node.build)
   end
 
   def initialize(graph)
@@ -36,7 +32,7 @@ class NFA
         io = StringIO.new(string[i..string.length])
         breadth_search(io)
       elsif method == :depth
-        depth_search(@graph.start, string[i..string.length], @end)
+        depth_search(0, string[i..string.length], @end)
         @end -= 1
       else
         break
@@ -45,18 +41,6 @@ class NFA
     end
 
     @found
-  end
-
-  def max_path
-    max_path = []
-    finals = (@graph.start..@graph.last).select { |e| @graph.final?(e) }
-
-    finals.each do |e|
-      @graph.end = e
-      path = @graph.dfs
-      max_path = path if path.length > max_path.length
-    end
-    max_path
   end
 
   def to_s
@@ -71,7 +55,7 @@ class NFA
     @states = []
     @chars = []
 
-    add_state(@old_states, @graph.start)
+    add_state(@old_states, 0)
     @states << @old_states.clone
     @chars << ''
 
@@ -104,7 +88,7 @@ class NFA
       @found = true
       @end = pos
     else
-      edges = @graph.edges(state)
+      edges = @graph.get_edges(state)
       edges.each do |edge|
         if edge.key?(string[0])
           depth_search(edge[string[0]], string[1..string.length], pos.succ)
@@ -119,16 +103,28 @@ class NFA
   def add_state(array, state)
     array.push(state)
 
-    if @graph.labels(state).include?(:empty)
-      @graph.neigbour(state, :empty).each { |e| array.push(e) }
+    edges = @graph.get_edges(state)
+    labels = edges.collect(&:keys).flatten! || []
+
+    if labels.include?(:empty)
+      edges.each { |e| array.push(e.values.first) if e.keys.first == :empty }
     end
   end
 
   def move(state, char)
-    if @graph.labels(state).include?(char)
-      return @graph.neigbour(state, char)
+    edges = @graph.get_edges(state)
+    labels = edges.collect(&:keys).flatten! || []
+
+    if labels.include?(char)
+      edges.each { |e| return e.values if e.keys.first == char }
     else
-      return []
+      []
     end
+
+    #if @graph.labels(state).include?(char)
+    #  return @graph.neigbour(state, char)
+    #else
+    #  return []
+    #end
   end
 end

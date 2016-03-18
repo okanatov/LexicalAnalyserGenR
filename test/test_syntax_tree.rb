@@ -16,49 +16,49 @@ class SimpleSyntaxTree < MiniTest::Test
   def test_concat
     tree = RegexpParser.new(StringIO.new('ab c'))
     node = "#{tree.expr}"
-    assert_equal('Concatenation: left=Concatenation: left=Node: data=a, left=, right=, right=Node: data=b, left=, right=, right=Node: data=c, left=, right=', node)
+    assert_equal('Concatenation: left=Concatenation: left=Node: character=a, right=Node: character=b, right=Node: character=c', node)
   end
 
   def test_single_chars_alternation
     tree = RegexpParser.new(StringIO.new('a | b'))
     node = "#{tree.expr}"
-    assert_equal('Alternation: left=Node: data=a, left=, right=, right=Node: data=b, left=, right=', node)
+    assert_equal('Alternation: left=Node: character=a, right=Node: character=b', node)
   end
 
   def test_sequence_alternation
     tree = RegexpParser.new(StringIO.new('ab | cd'))
     node = "#{tree.expr}"
-    assert_equal('Alternation: left=Concatenation: left=Node: data=a, left=, right=, right=Node: data=b, left=, right=, right=Concatenation: left=Node: data=c, left=, right=, right=Node: data=d, left=, right=', node)
+    assert_equal('Alternation: left=Concatenation: left=Node: character=a, right=Node: character=b, right=Concatenation: left=Node: character=c, right=Node: character=d', node)
   end
 
   def test_single_char_star
     tree = RegexpParser.new(StringIO.new('a*'))
     node = "#{tree.expr}"
-    assert_equal('Star: node=Node: data=a, left=, right=', node)
+    assert_equal('Star: node=Node: character=a', node)
   end
 
   def test_few_chars_before_star
     tree = RegexpParser.new(StringIO.new('abc*'))
     node = "#{tree.expr}"
-    assert_equal('Concatenation: left=Concatenation: left=Node: data=a, left=, right=, right=Node: data=b, left=, right=, right=Star: node=Node: data=c, left=, right=', node)
+    assert_equal('Concatenation: left=Concatenation: left=Node: character=a, right=Node: character=b, right=Star: node=Node: character=c', node)
   end
 
   def test_few_chars_after_star
     tree = RegexpParser.new(StringIO.new('a*bc'))
     node = "#{tree.expr}"
-    assert_equal('Concatenation: left=Concatenation: left=Star: node=Node: data=a, left=, right=, right=Node: data=b, left=, right=, right=Node: data=c, left=, right=', node)
+    assert_equal('Concatenation: left=Concatenation: left=Star: node=Node: character=a, right=Node: character=b, right=Node: character=c', node)
   end
 
   def test_few_chars_surround_star
     tree = RegexpParser.new(StringIO.new('ab*cd'))
     node = "#{tree.expr}"
-    assert_equal('Concatenation: left=Concatenation: left=Concatenation: left=Node: data=a, left=, right=, right=Star: node=Node: data=b, left=, right=, right=Node: data=c, left=, right=, right=Node: data=d, left=, right=', node)
+    assert_equal('Concatenation: left=Concatenation: left=Concatenation: left=Node: character=a, right=Star: node=Node: character=b, right=Node: character=c, right=Node: character=d', node)
   end
 
   def test_char_in_braces
     tree = RegexpParser.new(StringIO.new('a(b)c'))
     node = "#{tree.expr}"
-    assert_equal('Concatenation: left=Concatenation: left=Node: data=a, left=, right=, right=Node: data=b, left=, right=, right=Node: data=c, left=, right=', node)
+    assert_equal('Concatenation: left=Concatenation: left=Node: character=a, right=Node: character=b, right=Node: character=c', node)
 
     tree1 = RegexpParser.new(StringIO.new('abc'))
     node1 = "#{tree1.expr}"
@@ -68,19 +68,19 @@ class SimpleSyntaxTree < MiniTest::Test
   def test_sequence_in_braces
     tree = RegexpParser.new(StringIO.new('a(bc)d'))
     node = "#{tree.expr}"
-    assert_equal('Concatenation: left=Concatenation: left=Node: data=a, left=, right=, right=Concatenation: left=Node: data=b, left=, right=, right=Node: data=c, left=, right=, right=Node: data=d, left=, right=', node)
+    assert_equal('Concatenation: left=Concatenation: left=Node: character=a, right=Concatenation: left=Node: character=b, right=Node: character=c, right=Node: character=d', node)
   end
 
   def test_alternation_in_braces
     tree = RegexpParser.new(StringIO.new('a(b | c)d'))
     node = "#{tree.expr}"
-    assert_equal('Concatenation: left=Concatenation: left=Node: data=a, left=, right=, right=Alternation: left=Node: data=b, left=, right=, right=Node: data=c, left=, right=, right=Node: data=d, left=, right=', node)
+    assert_equal('Concatenation: left=Concatenation: left=Node: character=a, right=Alternation: left=Node: character=b, right=Node: character=c, right=Node: character=d', node)
   end
 
   def test_single_char_in_braces_star
     tree = RegexpParser.new(StringIO.new('a(b)*c'))
     node = "#{tree.expr}"
-    assert_equal('Concatenation: left=Concatenation: left=Node: data=a, left=, right=, right=Star: node=Node: data=b, left=, right=, right=Node: data=c, left=, right=', node)
+    assert_equal('Concatenation: left=Concatenation: left=Node: character=a, right=Star: node=Node: character=b, right=Node: character=c', node)
 
     tree1 = RegexpParser.new(StringIO.new('ab*c'))
     node1 = "#{tree1.expr}"
@@ -90,6 +90,6 @@ class SimpleSyntaxTree < MiniTest::Test
   def test_few_char_in_braces_star
     tree = RegexpParser.new(StringIO.new('a(bc)*d'))
     node = "#{tree.expr}"
-    assert_equal('Concatenation: left=Concatenation: left=Node: data=a, left=, right=, right=Star: node=Concatenation: left=Node: data=b, left=, right=, right=Node: data=c, left=, right=, right=Node: data=d, left=, right=', node)
+    assert_equal('Concatenation: left=Concatenation: left=Node: character=a, right=Star: node=Concatenation: left=Node: character=b, right=Node: character=c, right=Node: character=d', node)
   end
 end

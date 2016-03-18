@@ -43,7 +43,7 @@ module SyntaxTree
 
     def term
       if @lookahead =~ /[[:alnum:]]/
-        node = Node.new(@lookahead, nil, nil)
+        node = SingleNode.new(@lookahead)
         match(@lookahead)
         node
       else
@@ -80,12 +80,12 @@ module SyntaxTree
     end
 
     def star(node)
-      if !node.right.nil?
+      if node.instance_of?(SingleNode)
+        StarNode.new(node)
+      else
         temp = node.right
         right = StarNode.new(temp)
         concat(node.left, right)
-      else
-        StarNode.new(node)
       end
     end
 

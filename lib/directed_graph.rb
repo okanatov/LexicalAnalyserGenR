@@ -2,32 +2,34 @@
 # Copyright::  Copyright (c) 2015, 2016
 # License::    Distributes under the same terms as Ruby
 
-# This module contains implementation of the directed graph as well as
-# various functions to work with this graph.
+# Contains implementations of various types of graphs as well as
+# functions to work with graphs.
 module Graph
-  # This class represents a graph as an adjacency list, i.e. an array
-  # of arrays, one for each vertix in the graph.
-  # Each array describes the set of neighbors of its vertix.
+  # Represents a directed graph as an adjacency list, i.e. an array
+  # of arrays, where the outer array contains the graph vertices, but the inner one
+  # contains list of neighbors of a vertex.
   class DirectedGraph
     # Initializes an array of vertices.
-    # Each array item keeps another array that represents neigbours of the vertix.
+    # Each array item keeps another array that represents list of neigbours of the vertex.
     # A neigbour is stored in a hash where a key is a label and the associated value is the
-    # neigbour vertix.
+    # neigbour vertex.
     def initialize
       @vertices = []
     end
 
-    # Creates a graph consting of two vertex and the edge between them. The edge is associated
+    # Creates a graph consisting of two vertices and an edge between them. The edge is associated
     # with the label.
     #
     # @param character [Char] the edge label.
+    # @return [DirectedGraph] a new graph that consists of two vertices and an edge
+    # between them.
     def self.single_node(character)
       graph = DirectedGraph.new
       graph.add_edge(0, 1, character)
       graph
     end
 
-    # Adds one graph after another and returns a new graph containing both graphs.
+    # Adds one graph after another.
     #
     # @param first [DirectedGraph] a first graph.
     # @param second [DirectedGraph] a second graph followed by the first one.
@@ -41,8 +43,7 @@ module Graph
       result
     end
 
-    # Adds one graph to another paralelly and returns a new graph
-    # containing both graphs.
+    # Adds one graph to another paralelly.
     #
     # @param first [DirectedGraph] a first graph.
     # @param second [DirectedGraph] a second graph followed by the first one in parallel.
@@ -55,8 +56,9 @@ module Graph
       # Add first empty transition and copy the first graph to result
       add_empty_transition_and_copy_graph(first, result, 0) # starting from 0 since result is empty
 
-      # Add second empty transition and copy the second graph to result
       offset = result.last
+
+      # Add second empty transition and copy the second graph to result
       add_empty_transition_and_copy_graph(second, result, offset)
 
       # Add resulting empty transitions
@@ -68,9 +70,9 @@ module Graph
       result
     end
 
-    # Returns the latest vertix in the graph.
+    # Returns the latest graph vertex.
     #
-    # @return [Fixnum] index of the latest vertix in the graph.
+    # @return [Fixnum] index of the latest graph vertex.
     def last
       last = 0
       @vertices.each_index do |index|
@@ -79,18 +81,23 @@ module Graph
       last
     end
 
-    # Gets a list of the edges associated with a vertix.
+    # Gets a list of the edges associated with a vertex.
     #
-    # @param vertix [Fixnum] a vertix.
-    # @return [Array] a list of edges containing all the vertix neighbours together with
+    # @param vertex [Fixnum] a vertex.
+    # @return [Array] a list of edges containing all the vertex neighbours together with
     # their characters
-    def get_edges(vertix)
-      (@vertices[vertix] || []).collect(&:clone)
+    def get_edges(vertex)
+      (@vertices[vertex] || []).collect(&:clone)
     end
 
-    # Adds an edge, i.e. a neighbour vertix with the associated label.
+    def final?(vertex)
+      final_states = (0..last).select { |e| @vertices.at(e).nil? }
+      final_states.include?(vertex)
+    end
+
+    # Adds an edge, i.e. a neighbour vertex with the associated label.
     #
-    # @param from [Fixnum] a vertix to which an edge is going to be added.
+    # @param from [Fixnum] a vertex to which an edge is going to be added.
     # @param to [Fixnum] a neighbour added with the edge.
     # @param character [Char] the edge label.
     # @return [DirectedGraph] +:self+.
@@ -104,14 +111,14 @@ module Graph
 
     # Removes an edge.
     #
-    # @param vertix [Fixnum] a vertix.
+    # @param vertex [Fixnum] a vertex.
     # @param character [Char] a label.
-    def remove_edge(vertix, character)
-      validate_argument(vertix)
+    def remove_edge(vertex, character)
+      validate_argument(vertex)
 
-      edges = @vertices[vertix] || []
+      edges = @vertices[vertex] || []
       edges.delete_if { |element| element.key?(character) }
-      @vertices.delete_at(vertix) if edges.empty?
+      @vertices.delete_at(vertex) if edges.empty?
     end
 
     # Creates a string representation of +:self+.
@@ -133,7 +140,7 @@ module Graph
     def self.copy_graph(from, to, offset)
       (0..from.last).each do |index|
         edges = from.get_edges(index)
-        copy_edges(edges, to, offset)
+        copy_edges(edges, to, offset, index)
       end
     end
 
@@ -144,10 +151,9 @@ module Graph
     # @param offset [Fixnum] the offset in the +:graph+ graph from which the edges
     # are copied.
     # @return [DirectedGraph] +:self+.
-    def self.copy_edges(edges, graph, offset)
-      last = graph.last
+    def self.copy_edges(edges, graph, offset, index)
       edges.each do |element|
-        graph.add_edge(last, element.values.first + offset, element.keys.first)
+        graph.add_edge(index + offset, element.values.first + offset, element.keys.first)
       end
     end
 
@@ -166,20 +172,20 @@ module Graph
 
     private
 
-    # Returns the max vertix from the list of neighbours of a vertix.
+    # Returns the max vertex from the list of neighbours of a vertex.
     #
-    # @param [Fixnum] a vertix whose neighbours have to be examined for max value.
-    # @return [Fixnum] the max value from the list of neighbours of a vertix.
+    # @param [Fixnum] a vertex whose neighbours have to be examined for max value.
+    # @return [Fixnum] the max value from the list of neighbours of a vertex.
     def get_max_from_neighbours(index)
       get_neighbours(index).max || 0
     end
 
-    # Returns a list of neighbours associated with a vertix or an empty list.
+    # Returns a list of neighbours associated with a vertex or an empty list.
     #
-    # @param [Fixnum] a vertix which the list is returned for.
+    # @param [Fixnum] a vertex which the list is returned for.
     # @return [Array] a list containing neighbours vertices indexes.
-    def get_neighbours(vertix)
-      edges = get_edges(vertix)
+    def get_neighbours(vertex)
+      edges = get_edges(vertex)
       edges.collect(&:values).flatten! || []
     end
 
@@ -191,12 +197,12 @@ module Graph
       raise ArgumentError, "Argument #{arg} is negative" if arg < 0
     end
 
-    # Creates a new neighbours array for a vertix.
+    # Creates a new neighbours array for a vertex.
     #
-    # @param [Fixnum] a vertix which the array is created for.
+    # @param [Fixnum] a vertex which the array is created for.
     # @return [DirectedGraph] +:self+
-    def create_new(vertix)
-      @vertices[vertix] = []
+    def create_new(vertex)
+      @vertices[vertex] = []
     end
   end
 end

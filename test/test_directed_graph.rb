@@ -148,6 +148,25 @@ class DirectedGraphTest < MiniTest::Test
     assert_equal('[[{:empty=>1}, {:empty=>4}], [{"a"=>2}, {"b"=>3}], nil, [{:empty=>7}], [{"b"=>5}, {"c"=>6}], nil, [{:empty=>7}]]', result.to_s)
   end
 
+  def test_should_join_first_simple_graph_to_second_parallel_graph_one_by_one
+    first = DirectedGraph.new
+    first.add_edge(0, 1, 'a')
+
+    second = DirectedGraph.new
+    second.add_edge(0, 1, 'b')
+
+    third = DirectedGraph.new
+    third.add_edge(0, 1, 'c')
+
+    result = DirectedGraph.alternation(second, third)
+    refute_nil(result)
+    assert_equal('[[{:empty=>1}, {:empty=>3}], [{"b"=>2}], [{:empty=>5}], [{"c"=>4}], [{:empty=>5}]]', result.to_s)
+
+    result2 = DirectedGraph.concatenation(first, result)
+    refute_nil(result2)
+    assert_equal('[[{"a"=>1}], [{:empty=>2}, {:empty=>4}], [{"b"=>3}], [{:empty=>6}], [{"c"=>5}], [{:empty=>6}]]', result2.to_s)
+  end
+
   def test_should_verity_impossibility_to_concate_two_numbers
     graph = DirectedGraph.new
     graph.add_edge(0, 1, 'a')
