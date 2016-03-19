@@ -7,7 +7,6 @@ require_relative './directed_graph'
 module SyntaxTree
   # Represents a node in the syntax tree.
   class ConcatenationNode
-
     include Graph
 
     # @!attribute [r] left

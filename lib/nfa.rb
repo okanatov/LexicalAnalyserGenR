@@ -105,10 +105,7 @@ class NFA
 
     edges = @graph.get_edges(state)
     labels = edges.collect(&:keys).flatten! || []
-
-    if labels.include?(:empty)
-      edges.each { |e| array.push(e.values.first) if e.keys.first == :empty }
-    end
+    edges.each { |e| array.push(e.values.first) if e.keys.first == :empty } if labels.include?(:empty)
   end
 
   def move(state, char)
@@ -120,11 +117,5 @@ class NFA
     else
       []
     end
-
-    #if @graph.labels(state).include?(char)
-    #  return @graph.neigbour(state, char)
-    #else
-    #  return []
-    #end
   end
 end

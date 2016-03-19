@@ -35,7 +35,8 @@ module Graph
     # @param second [DirectedGraph] a second graph followed by the first one.
     # @return [DirectedGraph] a new graph which contains both +:first+ and +:second+.
     def self.concatenation(first, second)
-      raise ArgumentError, 'One of the arguments is not DirectedGraph' unless (first.is_a? DirectedGraph) && (second.is_a? DirectedGraph)
+      raise ArgumentError, 'Parameter first is not DirectedGraph' unless first.is_a? DirectedGraph
+      raise ArgumentError, 'Parameter second of the arguments is not DirectedGraph' unless second.is_a? DirectedGraph
 
       result = first
       offset = first.last
@@ -49,7 +50,8 @@ module Graph
     # @param second [DirectedGraph] a second graph followed by the first one in parallel.
     # @return [DirectedGraph] a new graph which contains both +:first+ and +:second+.
     def self.alternation(first, second)
-      raise ArgumentError, 'One of the arguments is not DirectedGraph' unless (first.is_a? DirectedGraph) && (second.is_a? DirectedGraph)
+      raise ArgumentError, 'Parameter first is not DirectedGraph' unless first.is_a? DirectedGraph
+      raise ArgumentError, 'Parameter second of the arguments is not DirectedGraph' unless second.is_a? DirectedGraph
 
       result = DirectedGraph.new
 
@@ -75,8 +77,8 @@ module Graph
     # @return [Fixnum] index of the latest graph vertex.
     def last
       last = 0
-      @vertices.each_index do |index|
-        last = [get_max_from_neighbours(index), index, last].max
+      @vertices.each_index do |i|
+        last = [get_max_from_neighbours(i), i, last].max
       end
       last
     end
@@ -91,7 +93,7 @@ module Graph
     end
 
     def final?(vertex)
-      final_states = (0..last).select { |e| @vertices.at(e).nil? }
+      final_states = (0..last).reject { |e| @vertices[e] }
       final_states.include?(vertex)
     end
 
@@ -117,7 +119,7 @@ module Graph
       validate_argument(vertex)
 
       edges = @vertices[vertex] || []
-      edges.delete_if { |element| element.key?(character) }
+      edges.delete_if { |e| e.key?(character) }
       @vertices.delete_at(vertex) if edges.empty?
     end
 
@@ -138,9 +140,9 @@ module Graph
     # graph is copied.
     # @return [DirectedGraph] +:self+.
     def self.copy_graph(from, to, offset)
-      (0..from.last).each do |index|
-        edges = from.get_edges(index)
-        copy_edges(edges, to, offset, index)
+      (0..from.last).each do |i|
+        edges = from.get_edges(i)
+        copy_edges(edges, to, offset, i)
       end
     end
 
@@ -152,8 +154,8 @@ module Graph
     # are copied.
     # @return [DirectedGraph] +:self+.
     def self.copy_edges(edges, graph, offset, index)
-      edges.each do |element|
-        graph.add_edge(index + offset, element.values.first + offset, element.keys.first)
+      edges.each do |e|
+        graph.add_edge(index + offset, e.values.first + offset, e.keys.first)
       end
     end
 

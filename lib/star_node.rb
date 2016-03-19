@@ -18,8 +18,8 @@ module SyntaxTree
       @node = node
     end
 
-    def interpret
-      puts 'interpret stub from StarNode'
+    def build
+      puts 'build stub from StarNode'
     end
 
     # Creates a string representation of +:self+.

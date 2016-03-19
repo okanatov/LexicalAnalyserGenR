@@ -37,7 +37,7 @@ module SyntaxTree
         @lookahead = ' '
         @lookahead = @string.getc while @lookahead =~ /[[:blank:]]/
       else
-        fail IOError
+        raise IOError
       end
     end
 
@@ -47,7 +47,7 @@ module SyntaxTree
         match(@lookahead)
         node
       else
-        fail IOError
+        raise IOError
       end
     end
 

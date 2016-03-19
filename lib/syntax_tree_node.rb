@@ -7,7 +7,6 @@ require_relative './directed_graph'
 module SyntaxTree
   # Represents a single node in the syntax tree.
   class SingleNode
-
     include Graph
 
     # @!attribute [r] character
