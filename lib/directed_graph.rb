@@ -92,11 +92,6 @@ module Graph
       (@vertices[vertex] || []).collect(&:clone)
     end
 
-    def final?(vertex)
-      final_states = (0..last).reject { |e| @vertices[e] }
-      final_states.include?(vertex)
-    end
-
     # Adds an edge, i.e. a neighbour vertex with the associated label.
     #
     # @param from [Fixnum] a vertex to which an edge is going to be added.

@@ -75,7 +75,7 @@ class NFA
     end
 
     @states.reverse_each do |e|
-      e.each { |s| @found = true if @graph.final?(s) }
+      e.each { |s| @found = true if final?(@graph, s) }
       break if @found
       @chars.pop
     end
@@ -84,7 +84,7 @@ class NFA
   end
 
   def depth_search(state, string, pos)
-    if @graph.final?(state)
+    if final?(@graph, state)
       @found = true
       @end = pos
     else
@@ -104,13 +104,17 @@ class NFA
     array.push(state)
 
     edges = @graph.get_edges(state)
-    labels = edges.collect(&:keys).flatten! || []
-    edges.each { |e| array.push(e.values.first) if e.keys.first == :empty } if labels.include?(:empty)
+    labels = get_labels(edges)
+
+    # TODO: to make a function taking block
+    if labels.include?(:empty)
+      edges.each { |e| array.push(e.values.first) if e.keys.first == :empty }
+    end
   end
 
   def move(state, char)
     edges = @graph.get_edges(state)
-    labels = edges.collect(&:keys).flatten! || []
+    labels = get_labels(edges)
 
     if labels.include?(char)
       edges.each { |e| return e.values if e.keys.first == char }
@@ -118,4 +122,15 @@ class NFA
       []
     end
   end
+
+  def get_labels(edges)
+    edges.collect(&:keys).flatten! || []
+  end
+
+  def final?(graph, vertex)
+    last = graph.last
+    final_states = (0..last).select { |i| graph.get_edges(i).empty? }
+    final_states.include?(vertex)
+  end
+
 end
