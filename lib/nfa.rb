@@ -88,12 +88,11 @@ class NFA
       @found = true
       @end = pos
     else
-      edges = @graph.get_edges(state)
-      edges.each do |edge|
-        if edge.key?(string[0])
-          depth_search(edge[string[0]], string[1..string.length], pos.succ)
-        elsif edge.key?(:empty)
-          depth_search(edge[:empty], string, pos)
+      @graph.each(state) do |k, v|
+        if k == string[0]
+          depth_search(v, string[1..string.length], pos.succ)
+        elsif k == :empty
+          depth_search(v, string, pos)
         end
         break true if @found
       end
@@ -102,15 +101,21 @@ class NFA
 
   def add_state(array, state)
     array.push(state)
-    @graph.each_label_in_vertex(state, :empty) do |v|
-      array.push(v)
+
+    @graph.each(state) do |k, v|
+      if k == :empty
+        array.push(v)
+      end
     end
   end
 
   def move(state, char)
     array = []
-    @graph.each_label_in_vertex(state, char) do |v|
-      array.push(v)
+
+    @graph.each(state) do |k, v|
+      if k == char
+        array.push(v)
+      end
     end
     array
   end

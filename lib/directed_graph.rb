@@ -125,30 +125,16 @@ module Graph
       @vertices.to_s
     end
 
-    # Returns a list of labels associated with a vertex or an empty list.
-    #
-    # @param [DirectedGraph] graph labels of which are returned.
-    # @param [Fixnum] a vertex which the list is returned for.
-    # @return [Array] a list containing all labels of the vertex.
-    def labels(vertex)
-      edges = get_edges(vertex)
-      edges.collect(&:keys).flatten! || []
-    end
-
-    # TODO
     def final?(vertex)
       final_states = (0..last).select { |i| get_edges(i).empty? }
       final_states.include?(vertex)
     end
 
-    def each_label_in_vertex(vertex, char, &block)
+    def each(vertex)
       edges = get_edges(vertex)
-      labels = labels(vertex)
-      
-      if labels.include?(char)
-        edges.each do |e|
-          block.call(e.values.first) if e.keys.first == char
-        end
+
+      edges.each do |e|
+        yield e.keys.first, e.values.first
       end
     end
 
