@@ -125,11 +125,13 @@ module Graph
       @vertices.to_s
     end
 
+    # TODO
     def final?(vertex)
       final_states = (0..last).select { |i| get_edges(i).empty? }
       final_states.include?(vertex)
     end
 
+    # TODO
     def each(vertex)
       edges = get_edges(vertex)
 
@@ -195,8 +197,11 @@ module Graph
     # @param [Fixnum] a vertex which the list is returned for.
     # @return [Array] a list containing neighbours vertices indexes.
     def get_neighbours(vertex)
-      edges = get_edges(vertex)
-      edges.collect(&:values).flatten! || []
+      neighbours = []
+      each(vertex) do |k, v|
+        neighbours << v
+      end
+      neighbours
     end
 
     # Validate the argument for correct type and that the argument is not negative

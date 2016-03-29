@@ -8,21 +8,23 @@ include Graph
 
 # Tests the DirectedGraph class
 class DirectedGraphTest < MiniTest::Test
-  def test_should_create_an_empty_graph_and_check_its_string_representation
+  def test_should_create_empty_and_check_representation
     graph = DirectedGraph.new
+
     refute_nil(graph)
     assert_equal('[]', graph.to_s)
   end
 
-  def test_should_add_one_edge_to_graph_and_check_string_representation
+  def test_should_add_one_edge_and_check_representation
     graph = DirectedGraph.new
+
     graph.add_edge(0, 1, 'a')
 
     refute_nil(graph)
     assert_equal('[[{"a"=>1}]]', graph.to_s)
   end
 
-  def test_should_add_a_few_edges_to_the_same_vertix
+  def test_should_add_a_few_edges
     graph = DirectedGraph.new
 
     graph.add_edge(0, 1, 'a')
@@ -32,19 +34,27 @@ class DirectedGraphTest < MiniTest::Test
     assert_equal('[[{"a"=>1}, {"c"=>3}], [{"b"=>2}]]', graph.to_s)
   end
 
-  def test_should_remove_one_edge_from_graph
+  def test_should_remove_one_edge
     graph = DirectedGraph.new
+
     graph.add_edge(0, 1, 'a')
     graph.add_edge(0, 2, 'b')
-
     graph.remove_edge(0, 'a')
 
     assert_equal('[[{"b"=>2}]]', graph.to_s)
   end
 
-  def test_should_remove_the_latest_edge_from_graph
+  def test_should_remove_latest_edge
     graph = DirectedGraph.new
+
     graph.add_edge(0, 1, 'a')
+    graph.remove_edge(0, 'a')
+
+    assert_equal('[]', graph.to_s)
+  end
+
+  def test_should_not_remove_non_existing_edge
+    graph = DirectedGraph.new
 
     graph.remove_edge(0, 'a')
 
@@ -52,6 +62,7 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_verify_impossibility_to_change_graph_via_get_edges
+    skip
     graph = DirectedGraph.new
     graph.add_edge(0, 1, 'a')
     graph.add_edge(1, 2, 'b')
@@ -67,6 +78,7 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_simple_graphs_one_by_one
+    skip
     first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
 
@@ -80,6 +92,7 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_graphs_one_by_one
+    skip
     first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
     first.add_edge(1, 2, 'b')
@@ -94,6 +107,7 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_complex_graphs_one_by_one
+    skip
     first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
     first.add_edge(0, 2, 'b')
@@ -108,6 +122,7 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_simple_graphs_in_parallel
+    skip
     first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
 
@@ -121,6 +136,7 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_graphs_in_parallel
+    skip
     first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
     first.add_edge(1, 2, 'b')
@@ -135,6 +151,7 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_complex_graphs_in_parallel
+    skip
     first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
     first.add_edge(0, 2, 'b')
@@ -149,6 +166,7 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_first_simple_graph_to_second_parallel_graph_one_by_one
+    skip
     first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
 
@@ -168,6 +186,7 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_verity_impossibility_to_concate_two_numbers
+    skip
     graph = DirectedGraph.new
     graph.add_edge(0, 1, 'a')
 
@@ -185,6 +204,7 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_verity_impossibility_to_alternate_two_numbers
+    skip
     graph = DirectedGraph.new
     graph.add_edge(0, 1, 'a')
 

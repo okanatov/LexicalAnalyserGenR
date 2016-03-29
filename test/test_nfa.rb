@@ -15,6 +15,11 @@ class SimpleNFA < MiniTest::Test
     assert(nil != @nfa_simple)
   end
 
+  def test_does_not_match
+    refute(@nfa_simple.matches?('def'), "NFA matches \"abc\"")
+    refute(@nfa_simple.matches?('def', :depth), "NFA matches \"abc\"")
+  end
+
   def test_simple_apply_abcdef
     assert(@nfa_simple.matches?('abcdef'), "NFA cannot match \"abc\"")
     assert_equal(2, @nfa_simple.end)
