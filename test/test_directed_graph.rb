@@ -187,9 +187,10 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_simple_graphs_one_by_one
-    skip
+    first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
 
+    second = DirectedGraph.new
     second.add_edge(0, 1, 'b')
 
     result = DirectedGraph.concatenation(first, second)
@@ -199,10 +200,11 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_graphs_one_by_one
-    skip
+    first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
     first.add_edge(1, 2, 'b')
 
+    second = DirectedGraph.new
     second.add_edge(0, 1, 'a')
     second.add_edge(1, 2, 'b')
 
@@ -212,10 +214,11 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_complex_graphs_one_by_one
-    skip
+    first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
     first.add_edge(0, 2, 'b')
 
+    second = DirectedGraph.new
     second.add_edge(0, 1, 'b')
     second.add_edge(0, 2, 'c')
 
@@ -225,9 +228,10 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_simple_graphs_in_parallel
-    skip
+    first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
 
+    second = DirectedGraph.new
     second.add_edge(0, 1, 'b')
 
     result = DirectedGraph.alternation(first, second)
@@ -237,10 +241,11 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_graphs_in_parallel
-    skip
+    first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
     first.add_edge(1, 2, 'b')
 
+    second = DirectedGraph.new
     second.add_edge(0, 1, 'a')
     second.add_edge(1, 2, 'b')
 
@@ -250,10 +255,11 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_two_complex_graphs_in_parallel
-    skip
+    first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
     first.add_edge(0, 2, 'b')
 
+    second = DirectedGraph.new
     second.add_edge(0, 1, 'b')
     second.add_edge(0, 2, 'c')
 
@@ -263,11 +269,13 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_join_first_simple_graph_to_second_parallel_graph_one_by_one
-    skip
+    first = DirectedGraph.new
     first.add_edge(0, 1, 'a')
 
+    second = DirectedGraph.new
     second.add_edge(0, 1, 'b')
 
+    third = DirectedGraph.new
     third.add_edge(0, 1, 'c')
 
     result = DirectedGraph.alternation(second, third)
@@ -280,7 +288,6 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_verity_impossibility_to_concate_two_numbers
-    skip
     @graph.add_edge(0, 1, 'a')
 
     assert_raises ArgumentError do
@@ -297,7 +304,6 @@ class DirectedGraphTest < MiniTest::Test
   end
 
   def test_should_verity_impossibility_to_alternate_two_numbers
-    skip
     @graph.add_edge(0, 1, 'a')
 
     assert_raises ArgumentError do
@@ -311,5 +317,10 @@ class DirectedGraphTest < MiniTest::Test
     assert_raises ArgumentError do
       DirectedGraph.alternation(1, 0)
     end
+  end
+
+  def test_should_create_single_node
+    graph = DirectedGraph.single_node('a')
+    assert_equal('[[{"a"=>1}]]', graph.to_s)
   end
 end
