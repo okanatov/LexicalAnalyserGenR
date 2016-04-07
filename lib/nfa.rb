@@ -22,14 +22,13 @@ class NFA
     @found = false
     @end = 0
 
-    (0..string.length).each do |i|
+    (0..string.length-1).each do |i|
       @end = i
       if method == :breadth
         io = StringIO.new(string[i..string.length])
         breadth_search(io)
       elsif method == :depth
         depth_search(0, string[i..string.length], @end)
-        @end -= 1
       else
         break
       end
@@ -52,10 +51,10 @@ class NFA
   def breadth_search(stringio)
     @old_states = []
     @new_states = []
-    @states = []
+    @dfa_states = []
 
     add_state(@old_states, 0)
-    @states << @old_states.clone
+    @dfa_states << @old_states.clone
 
     until stringio.eof?
       char = stringio.getc
@@ -65,26 +64,30 @@ class NFA
       end
 
       break if @new_states.empty?
-      @states << @new_states.clone
+      @dfa_states << @new_states.clone
 
       @old_states, @new_states = @new_states, @old_states
       @new_states.clear
     end
 
-    l = @states.length
-    @states.reverse_each do |e|
+    dfa_states_len = calculate_states
+    @end = @end + dfa_states_len - 1
+  end
+
+  def calculate_states
+    states_len = @dfa_states.length
+    @dfa_states.reverse_each do |e|
       e.each { |s| @found = true if @graph.final?(s) }
       break if @found
-      l -= 1
+      states_len -= 1
     end
-
-    @end = @end + (l - 2)
+    states_len - 1
   end
 
   def depth_search(state, string, pos)
     if @graph.final?(state)
       @found = true
-      @end = pos
+      @end = pos - 1
     else
       @graph.each(state) do |k, v|
         if k == string[0]

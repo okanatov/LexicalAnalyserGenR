@@ -38,7 +38,9 @@ module Graph
       raise ArgumentError, 'Parameter first is not DirectedGraph' unless first.is_a? DirectedGraph
       raise ArgumentError, 'Parameter second of the arguments is not DirectedGraph' unless second.is_a? DirectedGraph
 
-      result = first
+      result = DirectedGraph.new
+
+      copy_graph(first, result, 0)
       offset = first.last
       copy_graph(second, result, offset)
       result
