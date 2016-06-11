@@ -19,16 +19,17 @@ module SyntaxTree
 
     # Initializes the node with some data as well as references to left and right leaves.
     #
-    # @param data [Object] data that will be kept in the node.
     # @param left [SyntaxTreeNode] a reference to the left leaf.
     # @param right [SyntaxTreeNode] a reference to the right leaf.
-    def initialize(left, right)
+    # @param from [Fixnum] a starting vertex number.
+    def initialize(left, right, from)
       @left = left
       @right = right
+      @from = from
     end
 
     def build
-      DirectedGraph.concatenation(@left.build, @right.build, 0)
+      DirectedGraph.concatenation(@left.build, @right.build, @from)
     end
 
     # Creates a string representation of +:self+.

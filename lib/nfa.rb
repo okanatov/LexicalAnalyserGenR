@@ -13,7 +13,7 @@ class NFA
   attr_reader :end
 
   def self.from_string(string)
-    parser = RegexpParser.new(StringIO.new(string))
+    parser = RegexpParser.new(StringIO.new(string), 0)
     node = parser.expr
     new(node.build)
   end
