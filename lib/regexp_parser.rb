@@ -20,31 +20,20 @@ module SyntaxTree
     end
 
     def expr
-      if @lookahead == '('
-        match('(')
-        left = expr
-        match(')')
-      else
-        left = term
-      end
-      rest(left)
+      rest(term)
     end
 
     private
-
-    def match(char)
-      if @lookahead == char
-        @lookahead = ' '
-        @lookahead = @string.getc while @lookahead =~ /[[:blank:]]/
-      else
-        raise IOError
-      end
-    end
 
     def term
       if @lookahead =~ /[[:alnum:]]/
         node = SingleNode.new(@lookahead)
         match(@lookahead)
+        node
+      elsif @lookahead == '('
+        match('(')
+        node = expr
+        match(')')
         node
       else
         raise IOError
@@ -73,6 +62,15 @@ module SyntaxTree
         left = rest(left)
       end
       left
+    end
+
+    def match(char)
+      if @lookahead == char
+        @lookahead = ' '
+        @lookahead = @string.getc while @lookahead =~ /[[:blank:]]/
+      else
+        raise IOError
+      end
     end
 
     def alternate(left, right)
