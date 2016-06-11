@@ -28,7 +28,7 @@ module SyntaxTree
     end
 
     def build
-      DirectedGraph.alternation(@left.build, @right.build)
+      DirectedGraph.alternation(@left.build, @right.build, 0)
     end
 
     # Creates a string representation of +:self+.

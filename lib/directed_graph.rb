@@ -17,48 +17,51 @@ module Graph
       @vertices = []
     end
 
-    # Creates a graph consisting of two vertices and an edge between them. The edge is associated
-    # with the label.
+    # Starting from a vertex creates a graph consisting of two vertices and an edge between them.
+    # The edge is associated with the label.
     #
     # @param character [Char] the edge label.
+    # @param from [Fixnum] the starting vertex number.
     # @return [DirectedGraph] a new graph that consists of two vertices and an edge
     # between them.
-    def self.single_node(character)
+    def self.single_node(character, from)
       graph = DirectedGraph.new
-      graph.add_edge(0, 1, character)
+      graph.add_edge(from, from.succ, character)
       graph
     end
 
-    # Adds one graph after another.
+    # Starting from a vertex adds one graph after another.
     #
     # @param first [DirectedGraph] a first graph.
     # @param second [DirectedGraph] a second graph followed by the first one.
+    # @param from [Fixnum] the starting vertex number.
     # @return [DirectedGraph] a new graph which contains both +:first+ and +:second+.
-    def self.concatenation(first, second)
+    def self.concatenation(first, second, from)
       raise ArgumentError, 'Parameter first is not DirectedGraph' unless first.is_a? DirectedGraph
       raise ArgumentError, 'Parameter second of the arguments is not DirectedGraph' unless second.is_a? DirectedGraph
 
       result = DirectedGraph.new
 
-      copy_graph(first, result, 0)
-      offset = first.last
+      copy_graph(first, result, from)
+      offset = result.last
       copy_graph(second, result, offset)
       result
     end
 
-    # Adds one graph to another paralelly.
+    # Starting from a vertex adds one graph to another paralelly.
     #
     # @param first [DirectedGraph] a first graph.
     # @param second [DirectedGraph] a second graph followed by the first one in parallel.
+    # @param from [Fixnum] the starting vertex number.
     # @return [DirectedGraph] a new graph which contains both +:first+ and +:second+.
-    def self.alternation(first, second)
+    def self.alternation(first, second, from)
       raise ArgumentError, 'Parameter first is not DirectedGraph' unless first.is_a? DirectedGraph
       raise ArgumentError, 'Parameter second of the arguments is not DirectedGraph' unless second.is_a? DirectedGraph
 
       result = DirectedGraph.new
 
       # Add first empty transition and copy the first graph to result
-      add_empty_transition_and_copy_graph(first, result, 0) # starting from 0 since result is empty
+      add_empty_transition_and_copy_graph(first, result, from)
 
       offset = result.last
 

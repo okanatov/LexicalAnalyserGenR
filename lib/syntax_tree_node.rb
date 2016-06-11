@@ -21,7 +21,7 @@ module SyntaxTree
     end
 
     def build
-      DirectedGraph.single_node(@character)
+      DirectedGraph.single_node(@character, 0)
     end
 
     # Creates a string representation of +:self+.
