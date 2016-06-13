@@ -12,7 +12,7 @@ include Graph
 # Tests the SingleNode class
 class SingleNodeTest < MiniTest::Test
   def setup
-    @node = SingleNode.new('a', 0)
+    @node = SingleNode.new('a')
     refute_nil(@node)
   end
 

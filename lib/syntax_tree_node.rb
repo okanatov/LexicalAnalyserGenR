@@ -17,7 +17,7 @@ module SyntaxTree
     #
     # @param character [Char] the character associated with the node.
     # @param from [Fixnum] a starting vertex number.
-    def initialize(character, from)
+    def initialize(character, from = 0)
       @character = character
       @from = from
     end

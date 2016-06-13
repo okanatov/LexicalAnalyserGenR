@@ -22,7 +22,7 @@ module SyntaxTree
     # @param left [SyntaxTreeNode] a reference to the left leaf.
     # @param right [SyntaxTreeNode] a reference to the right leaf.
     # @param from [Fixnum] a starting vertex number.
-    def initialize(left, right, from)
+    def initialize(left, right, from = 0)
       @left = left
       @right = right
       @from = from

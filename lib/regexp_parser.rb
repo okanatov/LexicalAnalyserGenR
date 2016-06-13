@@ -14,7 +14,7 @@ module SyntaxTree
     #
     # @param string [StringIO] the stringio object that keeps the regular expression string to be parsed.
     # @param from [Fixnum] the starting vertex number in a graph.
-    def initialize(string, from)
+    def initialize(string, from = 0)
       @string = string
       @from = from
       @lookahead = ' ' # a character that is currently looked with the parser

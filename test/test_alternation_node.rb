@@ -13,9 +13,9 @@ include Graph
 # Tests the AlternationNode class.
 class AlternationNodeTest < MiniTest::Test
   def setup
-    left = SingleNode.new('a', 0)
-    right = SingleNode.new('b', 0)
-    @alt = AlternationNode.new(left, right, 0)
+    left = SingleNode.new('a')
+    right = SingleNode.new('b')
+    @alt = AlternationNode.new(left, right)
 
     refute_nil(@alt)
   end

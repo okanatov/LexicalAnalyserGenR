@@ -13,9 +13,9 @@ include Graph
 # Tests the ConcatenationNode class.
 class ConcatenationNodeTest < MiniTest::Test
   def setup
-    left = SingleNode.new('a', 0)
-    right = SingleNode.new('b', 0)
-    @concatenation = ConcatenationNode.new(left, right, 0)
+    left = SingleNode.new('a')
+    right = SingleNode.new('b')
+    @concatenation = ConcatenationNode.new(left, right)
 
     refute_nil(@concatenation)
   end
