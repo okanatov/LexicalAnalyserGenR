@@ -60,13 +60,20 @@ module Graph
 
       result = DirectedGraph.new
 
-      # Add first empty transition and copy the first graph to result
-      add_empty_transition_and_copy_graph(first, result, from)
+      # Add empty transition from +from+ to the first graph
+      result.add_edge(from, from.succ, :empty)
 
+      # Copy the first graph starting from position +from+ + 1
+      copy_graph(first, result, from.succ)
+
+      # Get final position after first graph copying
       offset = result.last
 
-      # Add second empty transition and copy the second graph to result
-      add_empty_transition_and_copy_graph(second, result, offset)
+      # Add empty transition from +from+ to the second graph
+      result.add_edge(from, offset.succ, :empty)
+
+      # Copy second graph starting from position +from+ + 1
+      copy_graph(second, result, offset.succ)
 
       # Add resulting empty transitions
       new_offset = result.last
@@ -172,19 +179,6 @@ module Graph
       edges.each do |e|
         graph.add_edge(index + offset, e.values.first + offset, e.keys.first)
       end
-    end
-
-    # Adds an empty transition and copies one graph to another with offset.
-    #
-    # @param from [DirectedGraph] the graph which is copied.
-    # @param to [DirectedGraph] the graph to which the other graph is copied.
-    # @param offset [Fixnum] the offset in the +:to+ graph from which the
-    # empty transition is added and the the +:from+ graph is copied.
-    # @return [DirectedGraph] +:self+.
-    def self.add_empty_transition_and_copy_graph(from, to, offset)
-      further_elem = offset + 1
-      to.add_edge(0, further_elem, :empty)
-      copy_graph(from, to, further_elem)
     end
 
     private
