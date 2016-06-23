@@ -9,12 +9,32 @@ class RulesReader
   end
 
   def read
-    rule = @file.gets.chop.split(/\t/)
+    rule = @file.gets
+    return nil if not rule
 
-    # Replace the second element with Proc obj
-    code = rule[1].slice(1..-2)
-    rule[1] = Proc.new { eval(code) }
+    state = :pattern
+    pattern = ""
+    action = ""
 
-    rule
+    rule.each_char do |char|
+      if char == '{'
+        state = :action
+        next
+      end
+
+      break if char == '}'
+
+      if state == :pattern
+        next if char =~ /[[:cntrl:]]/
+        pattern += char
+      elsif state == :action
+        action += char
+      end
+    end
+
+    # Replace action with Proc obj
+    action = Proc.new { eval(action) }
+
+    [pattern, action]
   end
 end
