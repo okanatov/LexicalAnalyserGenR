@@ -1,0 +1,10 @@
+1. Create a driver class
+2. Driver should do:
+    2.1 Read a file
+    2.2 Put pattern and action into an array of special structures
+    2.3 for each special structure and for each pattern it has to create NFA
+    2.4 store NFA in the array
+    2.5 first NFA should start from 1
+    2.6 all the next should start from number where the previous NFA finished
+    2.7 Tie all the NFAs with concatenation and make empty transitions from 0 to all of them
+    2.8 Invoke matches?

@@ -19,12 +19,15 @@ class RulesReaderTest < MiniTest::Test
     rule = @reader.read
 
     assert_equal('abc', rule[0])
-    assert_instance_of(Proc, rule[1])
+    assert_equal('return \'abc\'', rule[1])
+
+    output = eval(rule[1])
+    assert_equal('abc', output)
 
     rule = @reader.read
 
     assert_equal('cba', rule[0])
-    assert_instance_of(Proc, rule[1])
+    assert_equal('print \'cba\'', rule[1])
 
     rule = @reader.read
     assert_nil(rule)

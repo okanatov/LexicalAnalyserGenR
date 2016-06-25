@@ -17,24 +17,31 @@ class RulesReader
     action = ""
 
     rule.each_char do |char|
-      if char == '{'
-        state = :action
-        next
-      end
-
-      break if char == '}'
-
-      if state == :pattern
-        next if char =~ /[[:cntrl:]]/
-        pattern += char
-      elsif state == :action
-        action += char
-      end
+      state, pattern_char, action_char = step(state, char)
+      pattern += pattern_char
+      action += action_char
     end
 
-    # Replace action with Proc obj
-    action = Proc.new { eval(action) }
+    pattern.chomp!
+    action.chomp!.strip!
 
     [pattern, action]
+  end
+
+  private
+
+  def step(state, char)
+    pattern = ""
+    action = ""
+
+    return [:action, pattern, action] if char == '{' or char == '}'
+
+    if state == :pattern
+      pattern = char unless char =~ /[[:cntrl:]]/
+    elsif state == :action
+      action = char
+    end
+
+    return [state, pattern, action]
   end
 end

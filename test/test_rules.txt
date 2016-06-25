@@ -1,2 +1,2 @@
-abc	{ print 'abc' }
+abc	{ return 'abc' }
 cba	{ print 'cba' }
