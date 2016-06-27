@@ -13,10 +13,8 @@ module SyntaxTree
     # Initializes the parser that builds the syntax tree from the regular expression string.
     #
     # @param string [StringIO] the stringio object that keeps the regular expression string to be parsed.
-    # @param from [Fixnum] the starting vertex number in a graph.
-    def initialize(string, from = 0)
+    def initialize(string)
       @string = string
-      @from = from
       @lookahead = ' ' # a character that is currently looked with the parser
       @lookahead = @string.getc while @lookahead =~ /[[:blank:]]/ # to by pass all the blank characters in the beginning
     end
@@ -29,7 +27,7 @@ module SyntaxTree
 
     def term
       if @lookahead =~ /[[:alnum:]]/
-        node = SingleNode.new(@lookahead, @from)
+        node = SingleNode.new(@lookahead)
         match(@lookahead)
         node
       elsif @lookahead == '('
@@ -76,7 +74,7 @@ module SyntaxTree
     end
 
     def alternate(left, right)
-      AlternationNode.new(left, right, @from)
+      AlternationNode.new(left, right)
     end
 
     def star(node)
@@ -90,7 +88,7 @@ module SyntaxTree
     end
 
     def concat(left, right)
-      ConcatenationNode.new(left, right, @from)
+      ConcatenationNode.new(left, right)
     end
   end
 end

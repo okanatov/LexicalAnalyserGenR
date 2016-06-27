@@ -16,14 +16,13 @@ module SyntaxTree
     # Initializes the node with a character.
     #
     # @param character [Char] the character associated with the node.
-    # @param from [Fixnum] a starting vertex number.
-    def initialize(character, from = 0)
+    def initialize(character)
       @character = character
-      @from = from
     end
 
-    def build
-      DirectedGraph.single_node(@character, @from)
+    # @param from [Fixnum] a starting vertex number.
+    def build(from)
+      DirectedGraph.single_node(@character, from)
     end
 
     # Creates a string representation of +:self+.

@@ -21,15 +21,14 @@ module SyntaxTree
     #
     # @param left [SyntaxTreeNode] a reference to the left leaf.
     # @param right [SyntaxTreeNode] a reference to the right leaf.
-    # @param from [Fixnum] a starting vertex number.
-    def initialize(left, right, from = 0)
+    def initialize(left, right)
       @left = left
       @right = right
-      @from = from
     end
 
-    def build
-      DirectedGraph.concatenation(@left.build, @right.build, @from)
+    # @param from [Fixnum] a starting vertex number.
+    def build(from)
+      DirectedGraph.concatenation(@left.build(0), @right.build(0), from)
     end
 
     # Creates a string representation of +:self+.

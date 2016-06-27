@@ -21,7 +21,7 @@ class SingleNodeTest < MiniTest::Test
   end
 
   def test_should_build_a_simple_graph
-    graph = @node.build
+    graph = @node.build(0)
     assert_equal('[[{"a"=>1}]]', graph.to_s)
   end
 end

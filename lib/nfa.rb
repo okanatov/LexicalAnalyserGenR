@@ -15,7 +15,7 @@ class NFA
   def self.from_string(string)
     parser = RegexpParser.new(StringIO.new(string))
     node = parser.expr
-    new(node.build)
+    new(node.build(0))
   end
 
   def matches?(string, method = :breadth)

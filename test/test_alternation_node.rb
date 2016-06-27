@@ -21,7 +21,7 @@ class AlternationNodeTest < MiniTest::Test
   end
 
   def test_should_build_concatenation_graph
-    graph = @alt.build
+    graph = @alt.build(0)
     assert_equal('[[{:empty=>1}, {:empty=>3}], [{"a"=>2}], [{:empty=>5}], [{"b"=>4}], [{:empty=>5}]]', graph.to_s)
   end
 
