@@ -22,7 +22,7 @@ class NFA
     @found = false
     @end = 0
 
-    (0..string.length-1).each do |i|
+    (0..string.length - 1).each do |i|
       @end = i
       if method == :breadth
         io = StringIO.new(string[i..string.length])
@@ -104,9 +104,7 @@ class NFA
     array.push(state)
 
     @graph.each(state) do |k, v|
-      if k == :empty
-        array.push(v)
-      end
+      array.push(v) if k == :empty
     end
   end
 
@@ -114,9 +112,7 @@ class NFA
     array = []
 
     @graph.each(state) do |k, v|
-      if k == char
-        array.push(v)
-      end
+      array.push(v) if k == char
     end
     array
   end

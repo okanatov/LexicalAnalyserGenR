@@ -197,7 +197,7 @@ module Graph
     # @return [Array] a list containing neighbours vertices indexes.
     def get_neighbours(vertex)
       neighbours = []
-      each(vertex) do |k, v|
+      each(vertex) do |_, v|
         neighbours << v
       end
       neighbours

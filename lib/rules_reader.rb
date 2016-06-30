@@ -10,11 +10,10 @@ class RulesReader
 
   def read
     rule = @file.gets
-    return nil if not rule
+    return nil unless rule
 
     state = :pattern
-    pattern = ""
-    action = ""
+    pattern = action = ''
 
     rule.each_char do |char|
       state, pattern_char, action_char = step(state, char)
@@ -22,19 +21,15 @@ class RulesReader
       action += action_char
     end
 
-    pattern.chomp!
-    action.chomp!.strip!
-
-    [pattern, action]
+    [pattern.chomp, action.chomp.strip]
   end
 
   private
 
   def step(state, char)
-    pattern = ""
-    action = ""
+    pattern = action = ''
 
-    return [:action, pattern, action] if char == '{' or char == '}'
+    return [:action, pattern, action] if char == '{' || char == '}'
 
     if state == :pattern
       pattern = char unless char =~ /[[:cntrl:]]/
@@ -42,6 +37,6 @@ class RulesReader
       action = char
     end
 
-    return [state, pattern, action]
+    [state, pattern, action]
   end
 end
