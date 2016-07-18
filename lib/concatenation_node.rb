@@ -26,9 +26,8 @@ module SyntaxTree
       @right = right
     end
 
-    # @param from [Fixnum] a starting vertex number.
-    def build(from)
-      DirectedGraph.concatenation(@left.build(0), @right.build(0), from)
+    def build
+      DirectedGraph.concatenation(@left.build, @right.build)
     end
 
     # Creates a string representation of +:self+.

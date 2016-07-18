@@ -21,7 +21,7 @@ class ConcatenationNodeTest < MiniTest::Test
   end
 
   def test_should_build_concatenation_graph
-    graph = @concatenation.build(0)
+    graph = @concatenation.build
     assert_equal('[[{"a"=>1}], [{"b"=>2}]]', graph.to_s)
   end
 
