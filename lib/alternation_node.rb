@@ -5,16 +5,16 @@
 require_relative './directed_graph'
 
 module SyntaxTree
-  # Represents a node in the syntax tree.
+  # Represents a node in a syntax tree.
   class AlternationNode
     include Graph
 
     # @!attribute [r] left
-    #   @return [SyntaxTreeNode] a reference to the left leaf of the syntax tree.
+    # @return [SyntaxTreeNode] a reference to the left leaf of the syntax tree.
     attr_reader :left
 
     # @!attribute [r] right
-    #   @return [SyntaxTreeNode] a reference to the right leaf of the syntax tree.
+    # @return [SyntaxTreeNode] a reference to the right leaf of the syntax tree.
     attr_reader :right
 
     # Initializes the node with some data as well as references to left and right leaves.
@@ -26,6 +26,7 @@ module SyntaxTree
       @right = right
     end
 
+    # Builds a graph where the node left and right leaves joined in parallel
     def build
       DirectedGraph.alternation(@left.build, @right.build)
     end

@@ -134,13 +134,19 @@ module Graph
       @vertices.to_s
     end
 
-    # TODO
+    # Tests whether a given vertex is a final or not.
+    #
+    # @param vertex [Fixnum] a vertex.
+    # @return [Boolean] true if the vertex is final and false otherwise
+    # their characters
     def final?(vertex)
       final_states = (0..last).select { |i| get_edges(i).empty? }
       final_states.include?(vertex)
     end
 
-    # TODO
+    # Iterates all neighbours of a given vertex and performs a code block against each.
+    #
+    # @param vertex [Fixnum] a vertex neighbours of which are to be iterated.
     def each(vertex)
       edges = get_edges(vertex)
 
