@@ -57,6 +57,18 @@ class NFA
     false
   end
 
+  def get_next_token(stringio)
+    save_pos = stringio.pos
+
+    if matches?(stringio)
+      stringio.pos = save_pos
+      stringio.read(@size)
+    else
+      stringio.pos = save_pos
+      stringio.getc
+    end
+  end
+
   def to_s
     @graph.to_s
   end
