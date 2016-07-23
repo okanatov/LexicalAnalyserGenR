@@ -19,54 +19,25 @@ class NFA
   end
 
   def matches?(string)
-    @old_states = []
-    @new_states = []
-    @states = []
-
-    add_state(@old_states, 0)
-    @states << @old_states.clone
+    init
 
     until string.eof?
-      char = string.getc
-
-      @old_states.each do |state|
-        next_states = move(state, char)
-        next_states.each { |s| add_state(@new_states, s) unless @new_states.include?(s) }
-      end
-
+      compute_new_states(string.getc)
       break if @new_states.empty?
-
-      @states << @new_states.clone
-
-      @old_states.clear
-      @old_states = @new_states.clone
-      @new_states.clear
+      step
     end
 
-    @states.reverse!
-
-    @states.each_index do |index|
-      @states[index].each do |state|
-        if @graph.final?(state)
-          @size = @states.size - 1 - index
-          return true
-        end
-      end
-    end
-
-    false
+    compute_result
   end
 
   def get_next_token(stringio)
     save_pos = stringio.pos
 
-    if matches?(stringio)
-      stringio.pos = save_pos
-      stringio.read(@size)
-    else
-      stringio.pos = save_pos
-      stringio.getc
-    end
+    found = matches?(stringio)
+    stringio.pos = save_pos
+
+    return stringio.read(@size) if found
+    stringio.getc
   end
 
   def to_s
@@ -75,24 +46,64 @@ class NFA
 
   private
 
+  def init
+    @old_states = []
+    @new_states = []
+    @states = []
+
+    add_state(@old_states, 0)
+    @states << @old_states.clone
+  end
+
+  def compute_new_states(char)
+    @old_states.each do |state|
+      next_states = move(state, char)
+      next_states.each { |s| add_state(@new_states, s) unless @new_states.include?(s) }
+    end
+  end
+
+  def step
+    @states << @new_states.clone
+
+    @old_states.clear
+    @old_states = @new_states.clone
+    @new_states.clear
+  end
+
+  def compute_result
+    final_index = check_for_final
+    if final_index
+      @size = @states.size - 1 - final_index
+      return true
+    end
+
+    false
+  end
+
+  def check_for_final
+    @states.reverse!
+
+    @states.each_index do |index|
+      @states[index].each do |state|
+        return index if @graph.final?(state)
+      end
+    end
+
+    nil
+  end
+
   def initialize(graph)
     @graph = graph
   end
 
   def add_state(array, state)
     array.push(state)
-
-    @graph.each(state) do |k, v|
-      array.push(v) if k == :empty
-    end
+    @graph.each(state) { |k, v| add_state(array, v) if k == :empty }
   end
 
   def move(state, char)
     array = []
-
-    @graph.each(state) do |k, v|
-      array.push(v) if k == char
-    end
+    @graph.each(state) { |k, v| array.push(v) if k == char }
     array
   end
 end
