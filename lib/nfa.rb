@@ -30,20 +30,6 @@ class NFA
     compute_result
   end
 
-  def get_next_token(stringio)
-    save_pos = stringio.pos
-
-    found = matches?(stringio)
-    stringio.pos = save_pos
-
-    return stringio.read(@size) if found
-    stringio.getc
-  end
-
-  def to_s
-    @graph.to_s
-  end
-
   private
 
   def init
