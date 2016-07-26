@@ -28,7 +28,7 @@ module SyntaxTree
 
     # Builds a graph where the node left and right leaves joined one after another
     def build
-      DirectedGraph.concatenation(@left.build, @right.build)
+      GraphUtilities.concatenation(@left.build, @right.build)
     end
 
     # Creates a string representation of +:self+.

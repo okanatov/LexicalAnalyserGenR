@@ -22,7 +22,7 @@ module SyntaxTree
 
     # @param from [Fixnum] a starting vertex number.
     def build
-      DirectedGraph.single_node(@character)
+      GraphUtilities.single_node(@character)
     end
 
     # Creates a string representation of +:self+.

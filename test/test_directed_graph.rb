@@ -11,6 +11,7 @@ end
 
 require 'minitest/autorun'
 require_relative '../lib/directed_graph'
+require_relative '../lib/graph_utilities'
 include Graph
 
 # Tests the DirectedGraph class
@@ -96,13 +97,6 @@ class DirectedGraphTest < MiniTest::Test
     end
   end
 
-  def test_should_verify_impossibility_to_change_graph_via_get_edges
-    array = @three_edges.get_edges(0)
-    array[0]["a"] = 5
-    assert_equal('[{"a"=>5}, {"c"=>3}]', array.to_s)
-    assert_equal('[[{"a"=>1}, {"c"=>3}], [{"b"=>2}]]', @three_edges.to_s)
-  end
-
   def test_check_finals
     refute(@three_edges.final?(0))
     refute(@three_edges.final?(1))
@@ -137,72 +131,5 @@ class DirectedGraphTest < MiniTest::Test
 
   def test_should_get_last
     assert_equal(@three_edges.last, 3)
-  end
-
-  def test_should_join_two_one_edge_graphs_one_by_one
-    result = DirectedGraph.concatenation(@one_edge, @one_edge)
-    refute_nil(result)
-    assert_equal('[[{"a"=>1}], [{"a"=>2}]]', result.to_s)
-  end
-
-  def test_should_join_two_three_edges_graphs_one_by_one
-    result = DirectedGraph.concatenation(@three_edges, @three_edges)
-    refute_nil(result)
-    assert_equal('[[{"a"=>1}, {"c"=>3}], [{"b"=>2}], nil, [{"a"=>4}, {"c"=>6}], [{"b"=>5}]]', result.to_s)
-  end
-
-  def test_should_join_two_one_edge_graphs_in_parallel
-    result = DirectedGraph.alternation(@one_edge, @one_edge)
-    refute_nil(result)
-    assert_equal('[[{:empty=>1}, {:empty=>3}], [{"a"=>2}], [{:empty=>5}], [{"a"=>4}], [{:empty=>5}]]', result.to_s)
-  end
-
-  def test_should_join_two_three_edges_graphs_in_parallel
-    result = DirectedGraph.alternation(@three_edges, @three_edges)
-    refute_nil(result)
-    assert_equal('[[{:empty=>1}, {:empty=>5}], [{"a"=>2}, {"c"=>4}], [{"b"=>3}], nil, [{:empty=>9}], [{"a"=>6}, {"c"=>8}], [{"b"=>7}], nil, [{:empty=>9}]]', result.to_s)
-  end
-
-  def test_should_join_first_simple_graph_to_second_parallel_graph_one_by_one
-    result = DirectedGraph.alternation(@one_edge, @one_edge)
-    refute_nil(result)
-    assert_equal('[[{:empty=>1}, {:empty=>3}], [{"a"=>2}], [{:empty=>5}], [{"a"=>4}], [{:empty=>5}]]', result.to_s)
-
-    result2 = DirectedGraph.concatenation(@one_edge, result)
-    refute_nil(result2)
-    assert_equal('[[{"a"=>1}], [{:empty=>2}, {:empty=>4}], [{"a"=>3}], [{:empty=>6}], [{"a"=>5}], [{:empty=>6}]]', result2.to_s)
-  end
-
-  def test_should_verity_impossibility_to_concate_two_numbers
-    assert_raises ArgumentError do
-      DirectedGraph.concatenation(0, @one_edge)
-    end
-
-    assert_raises ArgumentError do
-      DirectedGraph.concatenation(@one_edge, 0)
-    end
-
-    assert_raises ArgumentError do
-      DirectedGraph.concatenation(1, 0)
-    end
-  end
-
-  def test_should_verity_impossibility_to_alternate_two_numbers
-    assert_raises ArgumentError do
-      DirectedGraph.alternation(0, @one_edge)
-    end
-
-    assert_raises ArgumentError do
-      DirectedGraph.alternation(@one_edge, 0)
-    end
-
-    assert_raises ArgumentError do
-      DirectedGraph.alternation(1, 0)
-    end
-  end
-
-  def test_should_create_single_node
-    graph = DirectedGraph.single_node('a')
-    assert_equal('[[{"a"=>1}]]', graph.to_s)
   end
 end
