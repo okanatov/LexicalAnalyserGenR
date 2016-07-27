@@ -11,13 +11,13 @@ require_relative '../lib/lexer'
 # Verifies the NFA class
 class LexerTest < MiniTest::Test
   def setup
-    @nfa_simple = Lexer.new('abc')
+    @nfa_simple = Lexer.new('./test/test_lexer_1.txt')
     assert(nil != @nfa_simple)
 
-    @nfa_alternation = Lexer.new('a(b|c)d')
+    @nfa_alternation = Lexer.new('./test/test_lexer_2.txt')
     assert(nil != @nfa_alternation)
 
-    @nfa_one_letter = Lexer.new('a')
+    @nfa_one_letter = Lexer.new('./test/test_lexer_3.txt')
     assert(nil != @nfa_one_letter)
   end
 

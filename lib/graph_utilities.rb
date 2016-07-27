@@ -44,26 +44,38 @@ module Graph
 
       result = DirectedGraph.new
 
-      # Add empty transition from 0 to 1
-      result.add_edge(0, 1, :empty)
-
-      # Copy the first graph starting from position 1
-      copy_graph(first, result, 1)
+      alternate(first, result)
 
       # Get final position after first graph copying
       offset = result.last
 
-      # Add empty transition from 0 to next vertex the first graph final position
-      result.add_edge(0, offset.succ, :empty)
-
-      # Copy second graph starting from position +offset+ + 1
-      copy_graph(second, result, offset.succ)
+      alternate(second, result)
 
       # Add resulting empty transitions
       new_offset = result.last
       latest = new_offset + 1
       result.add_edge(offset, latest, :empty)
       result.add_edge(new_offset, latest, :empty)
+
+      result
+    end
+
+    def self.join(first, second)
+      raise ArgumentError, 'Parameter first is not DirectedGraph' unless first.is_a? DirectedGraph
+      raise ArgumentError, 'Parameter second of the arguments is not DirectedGraph' unless second.is_a? DirectedGraph
+
+      result = DirectedGraph.new
+
+      check = false
+      first.each(0) { |k, v| check = true if k == :empty && v == 1 }
+
+      if check
+        copy_graph(first, result, 0)
+      else
+        alternate(first, result)
+      end
+
+      alternate(second, result)
 
       result
     end
@@ -85,17 +97,12 @@ module Graph
       end
     end
 
-    # Copies edges of one graph to another graph with offset.
-    #
-    # @param edges [Array] the array of edges which are copied.
-    # @param to [DirectedGraph] the graph to which the edges are copied.
-    # @param offset [Fixnum] the offset in the +:graph+ graph from which the edges
-    # are copied.
-    # @return [DirectedGraph] +:self+.
-    def self.copy_edges(edges, graph, offset, index)
-      edges.each do |e|
-        graph.add_edge(index + offset, e.values.first + offset, e.keys.first)
-      end
+    def self.alternate(from, to)
+      # Add empty transition from 0 to next vertex the first graph final position
+      to.add_edge(0, to.last.succ, :empty)
+
+      # Copy second graph starting from position +offset+ + 1
+      copy_graph(from, to, to.last)
     end
   end
 end

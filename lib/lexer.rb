@@ -1,9 +1,12 @@
 require 'stringio'
 require_relative './nfa'
+require_relative './rules_reader'
 
 class Lexer
-  def initialize(string)
-     @nfa = NFA.from_string(string)
+  def initialize(file)
+    reader = RulesReader.new(file)
+    rule = reader.read
+    @nfa = NFA.from_string(rule[0])
   end
 
   def get_next_token(stringio)
