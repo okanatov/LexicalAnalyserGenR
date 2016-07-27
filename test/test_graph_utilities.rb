@@ -96,12 +96,12 @@ class GraphUtilitiesTest < MiniTest::Test
   end
 
   def test_join
-    result = GraphUtilities.join(@one_edge, @one_edge)
+    result = GraphUtilities.add(@one_edge, @one_edge)
     refute_nil(result)
     assert_equal('[[{:empty=>1}, {:empty=>3}], [{"a"=>2}], nil, [{"a"=>4}]]', result.to_s)
 
     refute_nil(result)
-    result = GraphUtilities.join(result, @one_edge)
+    result = GraphUtilities.add(result, @one_edge)
     assert_equal('[[{:empty=>1}, {:empty=>3}, {:empty=>5}], [{"a"=>2}], nil, [{"a"=>4}], nil, [{"a"=>6}]]', result.to_s)
   end
 end

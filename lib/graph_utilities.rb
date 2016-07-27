@@ -16,7 +16,7 @@ module Graph
       graph
     end
 
-    # Adds one graph after another.
+    # Adds one graph after another and returns a new graph.
     #
     # @param first [DirectedGraph] a first graph.
     # @param second [DirectedGraph] a second graph followed by the first one.
@@ -33,7 +33,7 @@ module Graph
       result
     end
 
-    # Adds one graph to another paralelly.
+    # Adds one graph to another paralelly and returns a new graph.
     #
     # @param first [DirectedGraph] a first graph.
     # @param second [DirectedGraph] a second graph followed by the first one in parallel.
@@ -44,14 +44,20 @@ module Graph
 
       result = DirectedGraph.new
 
-      # Copy the first graph
-      alternate(first, result)
+      # Add empty transition from 0 to 1
+      result.add_edge(0, result.last.succ, :empty)
+
+      # Copy the first graph starting from 1
+      copy_graph(first, result, 1)
 
       # Get final position after first graph copying
       offset = result.last
 
+      # Add empty transition from 0 to +offset+ + 1
+      result.add_edge(0, offset.succ, :empty)
+
       # Copy the second graph
-      alternate(second, result)
+      copy_graph(second, result, offset.succ)
 
       # Add resulting empty transitions
       new_offset = result.last
@@ -62,12 +68,12 @@ module Graph
       result
     end
 
-    # Joins two graphs parallelly but without ending empty transitions.
+    # Adds two graphs without ending empty transitions and returns a new graph.
     #
     # @param first [DirectedGraph] a first graph.
     # @param second [DirectedGraph] a second graph.
     # @return [DirectedGraph] a new graph which contains both +:first+ and +:second+.
-    def self.join(first, second)
+    def self.add(first, second)
       raise ArgumentError, 'Parameter first is not DirectedGraph' unless first.is_a? DirectedGraph
       raise ArgumentError, 'Parameter second of the arguments is not DirectedGraph' unless second.is_a? DirectedGraph
 
@@ -79,10 +85,18 @@ module Graph
       if check
         copy_graph(first, result, 0)
       else
-        alternate(first, result)
+        # Add empty transition from 0 to 1
+        result.add_edge(0, result.last.succ, :empty)
+
+        # Copy the first graph starting from 1
+        copy_graph(first, result, result.last)
       end
 
-      alternate(second, result)
+      # Add empty transition from 0 to 1
+      result.add_edge(0, result.last.succ, :empty)
+
+      # Copy the second graph
+      copy_graph(second, result, result.last)
 
       result
     end
@@ -102,14 +116,6 @@ module Graph
           to.add_edge(i + offset, v + offset, k)
         end
       end
-    end
-
-    def self.alternate(from, to)
-      # Add empty transition from 0 to next vertex the first graph final position
-      to.add_edge(0, to.last.succ, :empty)
-
-      # Copy second graph starting from position +offset+ + 1
-      copy_graph(from, to, to.last)
     end
   end
 end
