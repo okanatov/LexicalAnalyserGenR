@@ -44,11 +44,13 @@ module Graph
 
       result = DirectedGraph.new
 
+      # Copy the first graph
       alternate(first, result)
 
       # Get final position after first graph copying
       offset = result.last
 
+      # Copy the second graph
       alternate(second, result)
 
       # Add resulting empty transitions
@@ -60,6 +62,11 @@ module Graph
       result
     end
 
+    # Joins two graphs parallelly but without ending empty transitions.
+    #
+    # @param first [DirectedGraph] a first graph.
+    # @param second [DirectedGraph] a second graph.
+    # @return [DirectedGraph] a new graph which contains both +:first+ and +:second+.
     def self.join(first, second)
       raise ArgumentError, 'Parameter first is not DirectedGraph' unless first.is_a? DirectedGraph
       raise ArgumentError, 'Parameter second of the arguments is not DirectedGraph' unless second.is_a? DirectedGraph
