@@ -95,13 +95,13 @@ class GraphUtilitiesTest < MiniTest::Test
     assert_equal('[[{"a"=>1}]]', graph.to_s)
   end
 
-  def test_join
-    result = GraphUtilities.add(@one_edge, @one_edge)
+  def test_two_graphs_can_be_combined
+    result = GraphUtilities.combine(@one_edge, @one_edge)
     refute_nil(result)
     assert_equal('[[{:empty=>1}, {:empty=>3}], [{"a"=>2}], nil, [{"a"=>4}]]', result.to_s)
 
     refute_nil(result)
-    result = GraphUtilities.add(result, @one_edge)
+    result = GraphUtilities.combine(result, @one_edge)
     assert_equal('[[{:empty=>1}, {:empty=>3}, {:empty=>5}], [{"a"=>2}], nil, [{"a"=>4}], nil, [{"a"=>6}]]', result.to_s)
   end
 end

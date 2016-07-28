@@ -68,12 +68,12 @@ module Graph
       result
     end
 
-    # Adds two graphs without ending empty transitions and returns a new graph.
+    # Combine two graphs without ending empty transitions and returns a new graph.
     #
     # @param first [DirectedGraph] a first graph.
     # @param second [DirectedGraph] a second graph.
     # @return [DirectedGraph] a new graph which contains both +:first+ and +:second+.
-    def self.add(first, second)
+    def self.combine(first, second)
       raise ArgumentError, 'Parameter first is not DirectedGraph' unless first.is_a? DirectedGraph
       raise ArgumentError, 'Parameter second of the arguments is not DirectedGraph' unless second.is_a? DirectedGraph
 
