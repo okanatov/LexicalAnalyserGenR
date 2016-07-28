@@ -19,42 +19,33 @@ class NFA
   end
 
   def matches?(string)
-    init
+    @queue = []
+    @queue << add_state(0)
+    @states = []
+    @states << @queue.last
 
-    until string.eof?
-      compute_new_states(string.getc)
-      break if @new_states.empty?
-      step
+    until @queue.empty? || string.eof?
+      char = string.getc
+      current = @queue.shift
+
+      new_states = []
+      current.each do |state|
+        next_states = move(state, char)
+        next_states.each { |s| new_states << add_state(s) unless @queue.include?(s) }
+      end
+      @queue << new_states.flatten
+      @states << @queue.last
     end
 
     compute_result
   end
 
+  def to_s
+    @graph.to_s
+  end
+
   private
 
-  def init
-    @old_states = []
-    @new_states = []
-    @states = []
-
-    add_state(@old_states, 0)
-    @states << @old_states.clone
-  end
-
-  def compute_new_states(char)
-    @old_states.each do |state|
-      next_states = move(state, char)
-      next_states.each { |s| add_state(@new_states, s) unless @new_states.include?(s) }
-    end
-  end
-
-  def step
-    @states << @new_states.clone
-
-    @old_states.clear
-    @old_states = @new_states.clone
-    @new_states.clear
-  end
 
   def compute_result
     final_index = check_for_final
@@ -82,9 +73,11 @@ class NFA
     @graph = graph
   end
 
-  def add_state(array, state)
+  def add_state(state)
+    array = []
     array.push(state)
-    @graph.each(state) { |k, v| add_state(array, v) if k == :empty }
+    @graph.each(state) { |k, v| array << add_state(v) if k == :empty }
+    array.flatten
   end
 
   def move(state, char)

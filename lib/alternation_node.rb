@@ -3,6 +3,7 @@
 # License::    Distributes under the same terms as Ruby
 
 require_relative './directed_graph'
+require_relative './graph_utilities'
 
 module SyntaxTree
   # Represents a node in a syntax tree.
