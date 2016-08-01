@@ -3,8 +3,8 @@ require_relative './nfa'
 require_relative './rules_reader'
 
 class Lexer
-  def initialize(file)
-    reader = RulesReader.new(file)
+  def initialize(io)
+    reader = RulesReader.new(io)
     rule = reader.read
     @nfa = NFA.from_string(rule[0])
   end

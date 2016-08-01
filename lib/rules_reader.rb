@@ -4,12 +4,12 @@
 
 # Represents a rules reader
 class RulesReader
-  def initialize(file)
-    @file = File.new(file)
+  def initialize(io)
+    @io = io
   end
 
   def read
-    rule = @file.gets
+    rule = @io.gets
     return nil unless rule
 
     state = :pattern

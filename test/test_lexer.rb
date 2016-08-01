@@ -7,17 +7,18 @@ end
 
 require 'minitest/autorun'
 require_relative '../lib/lexer'
+require 'stringio'
 
 # Verifies the NFA class
 class LexerTest < MiniTest::Test
   def setup
-    @nfa_simple = Lexer.new('./test/test_lexer_1.txt')
+    @nfa_simple = Lexer.new(StringIO.new('abc { return \'abc\' }'))
     assert(nil != @nfa_simple)
 
-    @nfa_alternation = Lexer.new('./test/test_lexer_2.txt')
+    @nfa_alternation = Lexer.new(StringIO.new('a(b|c)d { return \'a(b|c)d\' }'))
     assert(nil != @nfa_alternation)
 
-    @nfa_one_letter = Lexer.new('./test/test_lexer_3.txt')
+    @nfa_one_letter = Lexer.new(StringIO.new('a { return \'a\' }'))
     assert(nil != @nfa_one_letter)
   end
 

@@ -8,7 +8,7 @@ require_relative '../lib/rules_reader'
 # Tests for rules reader
 class RulesReaderTest < MiniTest::Test
   def setup
-    @reader = RulesReader.new('test/test_rules.txt')
+    @reader = RulesReader.new(File.new('test/test_rules.txt'))
   end
 
   # All rules consist of two fields; the first one is for the regex pattern and
