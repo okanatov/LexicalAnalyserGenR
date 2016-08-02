@@ -18,6 +18,10 @@ class NFA
     new(node.build)
   end
 
+  def self.from_graph(graph)
+    new(graph)
+  end
+
   def matches?(string)
     init
 

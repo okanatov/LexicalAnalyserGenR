@@ -7,6 +7,7 @@ end
 
 require 'minitest/autorun'
 require_relative '../lib/nfa'
+require_relative '../lib/graph_utilities'
 
 # Verifies the NFA class
 class SimpleNFA < MiniTest::Test
@@ -19,6 +20,24 @@ class SimpleNFA < MiniTest::Test
 
     @nfa_alternation_2 = NFA.from_string('ab|cd')
     assert(nil != @nfa_alternation_2)
+
+    @nfa_complex = NFA.from_graph(
+      GraphUtilities.combine(
+        GraphUtilities.concatenation(
+          GraphUtilities.concatenation(
+            GraphUtilities.single_node('a'), GraphUtilities.single_node('b'),
+          ),
+          GraphUtilities.single_node('c')
+        ),
+        GraphUtilities.concatenation(
+          GraphUtilities.concatenation(
+            GraphUtilities.single_node('d'), GraphUtilities.single_node('e'),
+          ),
+          GraphUtilities.single_node('f')
+        )
+      )
+    )
+    assert(nil != @nfa_complex)
   end
 
   def test_does_not_match_def
@@ -69,5 +88,15 @@ class SimpleNFA < MiniTest::Test
 
     assert(nfa_alternation.matches?(StringIO.new('longest')), "NFA does not match \"longest\"")
     assert_equal(7, nfa_alternation.size)
+  end
+
+  def test_combination_matches_both_branches
+    assert(@nfa_complex.matches?(StringIO.new('abc')), "NFA does not match \"abc\"")
+    assert_equal(3, @nfa_complex.size)
+
+    assert(@nfa_complex.matches?(StringIO.new('def')), "NFA does not match \"def\"")
+    assert_equal(3, @nfa_complex.size)
+
+    refute(@nfa_complex.matches?(StringIO.new('de')), "NFA does match \"de\"")
   end
 end
