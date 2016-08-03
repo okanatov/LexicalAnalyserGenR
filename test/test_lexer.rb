@@ -7,6 +7,8 @@ end
 
 require 'minitest/autorun'
 require_relative '../lib/lexer'
+require_relative '../lib/concatenation_node'
+require_relative '../lib/alternation_node'
 require 'stringio'
 
 # Verifies the NFA class
@@ -91,7 +93,7 @@ class LexerTest < MiniTest::Test
     io = StringIO.new('dacde')
 
     assert_equal('d', @nfa_alternation.get_next_token(io))
-    assert_equal('acd', @nfa_alternation.get_next_token(io))
+    assert_equal('a(b|c)d', @nfa_alternation.get_next_token(io))
     assert_equal('e', @nfa_alternation.get_next_token(io))
     assert_equal(nil, @nfa_alternation.get_next_token(io))
   end
@@ -100,7 +102,7 @@ class LexerTest < MiniTest::Test
     io = StringIO.new('dabde')
 
     assert_equal('d', @nfa_alternation.get_next_token(io))
-    assert_equal('abd', @nfa_alternation.get_next_token(io))
+    assert_equal('a(b|c)d', @nfa_alternation.get_next_token(io))
     assert_equal('e', @nfa_alternation.get_next_token(io))
     assert_equal(nil, @nfa_alternation.get_next_token(io))
   end
