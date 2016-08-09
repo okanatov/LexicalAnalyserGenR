@@ -98,5 +98,7 @@ class SimpleNFA < MiniTest::Test
     assert_equal(3, @nfa_complex.size)
 
     refute(@nfa_complex.matches?(StringIO.new('de')), "NFA does match \"de\"")
+
+    refute(@nfa_complex.matches?(StringIO.new('g')), "NFA does match \"g\"")
   end
 end
