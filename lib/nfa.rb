@@ -46,8 +46,8 @@ class NFA
   end
 
   def compute_new_states(char)
-    @old_states.each do |state|
-      next_states = move(state, char)
+    until @old_states.empty?
+      next_states = move(@old_states.pop, char)
       next_states.each { |s| add_state(@new_states, s) unless @new_states.include?(s) }
     end
   end
@@ -55,8 +55,7 @@ class NFA
   def step
     @states << @new_states.clone
 
-    @old_states.clear
-    @old_states = @new_states.clone
+    @old_states += @new_states
     @new_states.clear
   end
 
